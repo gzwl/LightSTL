@@ -34,8 +34,8 @@ static void destroy_final(InputIterator ite1,InputIterator ite2,false_type)
 template<class InputIterator,class T>
 static void destroy_get_type(InputIterator ite1,InputIterator ite2,T*)
 {
-	typedef typename type_traits<T>::has_trival_destructor_type trival_destructor;
-	destroy_final(ite1,ite2,trival_destructor());
+	typedef typename type_traits<T>::has_trivial_destructor_type trivial_destructor;
+	destroy_final(ite1,ite2,trivial_destructor());
 }
 
 
@@ -96,14 +96,14 @@ void uninitialized_fill(InputIterator start,InputIterator finish,const T& val)
 
 //uninitialized_copy
 
-template<class InputIterator>
-static InputIterator uninitialized_copy_aux(InputIterator start,InputIterator finish,InputIterator des,true_type)
+template<class InputIterator,class OutputIterator>
+static OutputIterator uninitialized_copy_aux(InputIterator start,InputIterator finish,OutputIterator des,true_type)
 {
 	return copy(start,finish,des);
 }
 
-template<class InputIterator>
-static InputIterator uninitialized_copy_aux(InputIterator start,InputIterator finish,InputIterator des,false_type)
+template<class InputIterator,class OutputIterator>
+static OutputIterator uninitialized_copy_aux(InputIterator start,InputIterator finish,OutputIterator des,false_type)
 {
 	while(start != finish){
 		*des++ = *start++;
@@ -111,15 +111,15 @@ static InputIterator uninitialized_copy_aux(InputIterator start,InputIterator fi
 	return des;
 }
 
-template<class InputIterator,class T>
-static InputIterator uninitialized_copy_get_type(InputIterator start,InputIterator finish,InputIterator des,T*)
+template<class InputIterator,class OutputIterator,class T>
+static OutputIterator uninitialized_copy_get_type(InputIterator start,InputIterator finish,OutputIterator des,T*)
 {
 	typedef typename type_traits<T>::is_POD_type is_POD_type;
 	return uninitialized_copy_aux(start,finish,des,is_POD_type());
 }
 
-template<class InputIterator>
-InputIterator uninitialized_copy(InputIterator start,InputIterator finish,InputIterator des)
+template<class InputIterator,class OutputIterator>
+OutputIterator uninitialized_copy(InputIterator start,InputIterator finish,OutputIterator des)
 {
 	return uninitialized_copy_get_type(start,finish,des,&*start);
 }
