@@ -1,6 +1,6 @@
 #include "Alloc.h"
 
-namespace LigthSTL{
+namespace LightSTL{
 
 void* alloc::allocate(size_t n)
 {

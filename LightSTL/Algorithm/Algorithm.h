@@ -8,7 +8,7 @@ namespace LightSTL{
 /**********fill函数**********/
 
 //分支,迭代器为char*
-void fill_branch(char* start,char* finish,const char val,random_access_iterator)
+inline void fill_branch(char* start,char* finish,const char val,random_access_iterator)
 {
 	memset(start,val,finish - start);
 }
@@ -43,7 +43,7 @@ void fill(InputIterator start,InputIterator finish,const T& val)
 
 /**********fill_n函数**********/
 
-char* fill_n(char* start,size_t n,const char val)
+inline char* fill_n(char* start,size_t n,const char val)
 {
 	memset(start,val,n);
 	return start + n;
@@ -58,10 +58,64 @@ InputIterator fill_n(InputIterator start,size_t n,const T& val)
 	return start;
 }
 
+/**********copy函数**********/
 
+//分支2,value_type有trivial_assignment
+template<class InputIterator,class T>
+static InputIterator copy_branch2(InputIterator start,InputIterator finish,InputIterator des,T*,true_type)
+{
+	size_t n = finish - start;
+	memmove(des,start,n * sizeof(T));
+	return des + n;
+}
+
+//分支2,value_type有nontrivial_assignment
+template<class InputIterator,class T>
+static InputIterator copy_branch2(InputIterator start,InputIterator finish,InputIterator des,T*,false_type)
+{
+	size_t n = finish - start;
+	while(n--){
+		*des++ = *start++;
+	}
 }
 
 
+//萃取出迭代器的value_type
+template<class InputIterator,class T>
+static InputIterator copy_get_value_type(InputIterator start,InputIterator finish,InputIterator des,T*)
+{
+	typedef typename type_traits<T>::has_trivial_assignment_type has_trivial_assignment;
+	return copy_branch2(start,finish,des,static_cast<T*>(0),has_trivial_assignment());
+}
+
+
+//分支1，迭代器random_access_iterator
+template<class InputIterator>
+static InputIterator copy_branch1(InputIterator start,InputIterator finish,InputIterator des,random_access_iterator)
+{
+	return copy_get_value_type(start,finish,des,&*start);
+}
+
+//分支1，迭代器为forward_iterator
+template<class InputIterator>
+static InputIterator copy_branch1(InputIterator start,InputIterator finish,InputIterator des,forward_iterator)
+{
+	while(start != finish){
+		*des++ = *start++;
+	}
+	return des;
+}
+
+//唯一对外接口
+template<class InputIterator>
+InputIterator copy(InputIterator start,InputIterator finish,InputIterator des)
+{
+	typedef typename iterator_traits<InputIterator>::iterator_type iterator_type;
+	return copy_branch1(start,finish,des,iterator_type());
+}
+
+
+}
 #endif
 
 

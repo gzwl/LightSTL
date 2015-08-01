@@ -10,23 +10,23 @@ class allocator
 {
 public:
 
-	T* allocate(size_t n)
-	{	
+	static T* allocate(size_t n)
+	{
 		if(n == 0)	return 0;
-		else	return Alloc::allocate(n*sizeof(T));
+		else	return static_cast<T*>(alloc::allocate(n*sizeof(T)));
 	}
 
-	T* allocate(){	return Alloc::allocate(sizeof(T);)}
+	static T* allocate(){	return static_cast<T*>(alloc::allocate(sizeof(T)));}
 
-	void deallocate(void *p,size_t n)
+	static void deallocate(void *p,size_t n)
 	{
 		if(n == 0)	return ;
-		else	Alloc::deallocate(p,n*sizeof(T));
+		else	alloc::deallocate(p,n*sizeof(T));
 	}
-	
-	void deallocate(void *p){	Alloc::deallocate(p,sizeof(T));}
 
-}
+	static void deallocate(void *p){	alloc::deallocate(p,sizeof(T));}
+
+};
 
 }
 
