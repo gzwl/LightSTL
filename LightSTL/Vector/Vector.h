@@ -72,6 +72,7 @@ public:
 	/*************************关系运算****************************/
 	bool operator==(const vector& rhs) const;
 	bool operator!=(const vector& rhs) const;
+	void operator=(const vector& rhs) ;
 	friend void swap<T,Alloc>(vector<T,Alloc>& lhs,vector<T,Alloc>& rhs);
 
 private:

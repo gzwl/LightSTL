@@ -42,7 +42,7 @@ static void destroy_get_type(InputIterator ite1,InputIterator ite2,T*)
 template<class InputIterator>
 void destroy(InputIterator ite1,InputIterator ite2)
 {
-	destroy_get_type(ite1,ite2,&(*ite1));
+	destroy_get_type(ite1,ite2,value_type(ite1));
 }
 
 /*************空间管理工具*************/
@@ -106,7 +106,7 @@ template<class InputIterator,class OutputIterator>
 static OutputIterator uninitialized_copy_aux(InputIterator start,InputIterator finish,OutputIterator des,false_type)
 {
 	while(start != finish){
-		*des++ = *start++;
+		construct(&*des++,*start++);
 	}
 	return des;
 }
@@ -121,7 +121,7 @@ static OutputIterator uninitialized_copy_get_type(InputIterator start,InputItera
 template<class InputIterator,class OutputIterator>
 OutputIterator uninitialized_copy(InputIterator start,InputIterator finish,OutputIterator des)
 {
-	return uninitialized_copy_get_type(start,finish,des,&*start);
+	return uninitialized_copy_get_type(start,finish,des,value_type(start));
 }
 
 }

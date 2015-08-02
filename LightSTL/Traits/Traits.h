@@ -24,6 +24,12 @@ struct iterator_traits<T*>
     typedef T value_type;
 };
 
+template<class InputIterator>
+typename iterator_traits<InputIterator>::value_type* value_type(const InputIterator& ite)
+{
+    return static_cast<typename iterator_traits<InputIterator>::value_type*>(0);
+}
+
 /***************type_traits，用来萃取类的性质***************/
 
 struct true_type{};

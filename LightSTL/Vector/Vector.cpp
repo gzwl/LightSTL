@@ -4,7 +4,10 @@
 #include "Vector.h"
 #include "../Allocator/Construct.h"
 
+
 namespace LightSTL{
+
+
 
 /*************************构造，析构**************************/
 template<class T,class Alloc>
@@ -26,7 +29,7 @@ vector<T,Alloc>::vector(const vector& rhs)
     start = allocate(n);
     finish = start + n;
     end_of_storage = start + n;
-    uninitialized_copy(rhs.cbegin(),rhs.cend(),start);
+    LightSTL::uninitialized_copy(rhs.cbegin(),rhs.cend(),start);
 }
 
 template<class T,class Alloc>
@@ -59,20 +62,20 @@ void vector<T,Alloc>::insert(typename vector<T,Alloc>::iterator pos,size_t n,con
 	if(end_of_storage - end() >= n){
 
 		//插入的元素位置在尾部
-		if(pos == end())	uninitialized_fill_n(pos,n,val);
+		if(pos == end())	LightSTL::uninitialized_fill_n(pos,n,val);
 
 		//插入的元素不会到达尾部
 		else if(pos + n < end()){
-			uninitialized_copy(end() - n,end(),end());
-			copy(pos,end() - n,pos + n);
-			fill(pos,pos + n,val);
+			LightSTL::uninitialized_copy(end() - n,end(),end());
+			LightSTL::copy(pos,end() - n,pos + n);
+			LightSTL::fill(pos,pos + n,val);
 		}
 
 		//插入的元素会到达尾部
 		else{
-			uninitialized_copy(pos,end(),pos + n);
-			uninitialized_fill(end(),pos + n,val);
-			fill(pos,end(),val);
+			LightSTL::uninitialized_copy(pos,end(),pos + n);
+			LightSTL::uninitialized_fill(end(),pos + n,val);
+			LightSTL::fill(pos,end(),val);
 		}
 		finish = finish + n;
 	}
@@ -81,9 +84,10 @@ void vector<T,Alloc>::insert(typename vector<T,Alloc>::iterator pos,size_t n,con
 	else{
 		size_t new_capacity = n > capacity() ? n + capacity() : 2 * capacity();
 		T* new_start = allocate(new_capacity);
-		uninitialized_copy(begin(),pos,new_start);
-		uninitialized_fill_n(new_start + static_cast<size_t>(pos - begin()),n,val);
-		uninitialized_copy(pos,end(),new_start + static_cast<size_t>(pos - begin()) + n);
+		LightSTL::uninitialized_copy(begin(),pos,new_start);
+		LightSTL::uninitialized_fill_n(new_start + static_cast<size_t>(pos - begin()),n,val);
+		LightSTL::uninitialized_copy(pos,end(),new_start + static_cast<size_t>(pos - begin()) + n);
+		destroy(begin(),end());
 		deallocate();
 		size_t old_size = size();
 		start = new_start;
@@ -102,20 +106,20 @@ typename vector<T,Alloc>::iterator vector<T,Alloc>::insert(typename vector<T,All
 	if(end_of_storage - end() >= n){
 
 		//插入的元素位置在尾部
-		if(pos == end())	uninitialized_copy(lhs,rhs,pos);
+		if(pos == end())	LightSTL::uninitialized_copy(lhs,rhs,pos);
 
 		//插入的元素不会到达尾部
 		else if(pos + n < end()){
-			uninitialized_copy(end() - n,end(),end());
-			copy(pos,end() - n,pos + n);
-			copy(lhs,rhs,pos);
+			LightSTL::uninitialized_copy(end() - n,end(),end());
+			LightSTL::copy(pos,end() - n,pos + n);
+			LightSTL::copy(lhs,rhs,pos);
 		}
 
 		//插入的元素会到达尾部
 		else{
-			uninitialized_copy(pos,end(),pos + n);
-			copy(lhs,lhs + static_cast<size_t>(end() - pos),pos);
-			uninitialized_copy(lhs + static_cast<size_t>(end() - pos),rhs,end());
+			LightSTL::uninitialized_copy(pos,end(),pos + n);
+			LightSTL::copy(lhs,lhs + static_cast<size_t>(end() - pos),pos);
+			LightSTL::uninitialized_copy(lhs + static_cast<size_t>(end() - pos),rhs,end());
 		}
 		finish = finish + n;
 		return pos;
@@ -126,9 +130,9 @@ typename vector<T,Alloc>::iterator vector<T,Alloc>::insert(typename vector<T,All
 		size_t new_capacity = n > capacity() ? n + capacity() : 2 * capacity();
 		T* new_start = allocate(new_capacity);
 		size_t offset = static_cast<size_t>(pos - begin());
-		uninitialized_copy(begin(),pos,new_start);
-		uninitialized_copy(lhs,rhs,new_start + offset);
-		uninitialized_copy(pos,end(),new_start + offset + n);
+		LightSTL::uninitialized_copy(begin(),pos,new_start);
+		LightSTL::uninitialized_copy(lhs,rhs,new_start + offset);
+		LightSTL::uninitialized_copy(pos,end(),new_start + offset + n);
 		destroy(begin(),end());
 		deallocate();
 		size_t old_size = size();
@@ -145,7 +149,7 @@ void vector<T,Alloc>::resize(size_t n,const T& val)
     if(n <=  size())
         erase(begin() + n,end());
     else
-        insert(end(),n -  size(),val);
+        insert(end(),n - size(),val);
 }
 
 /*************************删除元素****************************/
@@ -165,7 +169,7 @@ void vector<T,Alloc>::clear()
 template<class T,class Alloc>
 typename vector<T,Alloc>::iterator vector<T,Alloc>::erase(typename vector<T,Alloc>::iterator pos)
 {
-    copy(pos + 1,end(),pos);
+    LightSTL::copy(pos + 1,end(),pos);
     destroy(--finish);
     return pos;
 }
@@ -173,7 +177,7 @@ typename vector<T,Alloc>::iterator vector<T,Alloc>::erase(typename vector<T,Allo
 template<class T,class Alloc>
 typename vector<T,Alloc>::iterator vector<T,Alloc>::erase(typename vector<T,Alloc>::iterator lhs,typename vector<T,Alloc>::iterator rhs)
 {
-    iterator ite = copy(rhs,end(),lhs);
+    iterator ite = LightSTL::copy(rhs,end(),lhs);
     destroy(ite,end());
     finish = ite;
     return lhs;
@@ -198,11 +202,28 @@ bool vector<T,Alloc>::operator!=(const vector<T,Alloc>& rhs) const
 }
 
 template<class T,class Alloc>
+void vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
+{
+    //赋值的右值为本身
+    if(start == rhs.start)  return ;
+    destroy(start,finish);
+    if(size() >= rhs.size()){
+        finish = uninitialized_copy(rhs.start,rhs.finish,start);
+    }
+    else{
+        deallocate();
+        start = allocate(rhs.size());
+        finish = uninitialized_copy(rhs.start,rhs.finish,start);
+        end_of_storage = finish;
+    }
+}
+
+template<class T,class Alloc>
 void swap(vector<T,Alloc> &lhs,vector<T,Alloc> &rhs)
 {
-    swap(lhs.start,rhs.start);
-    swap(lhs.finish,rhs.finish);
-    swap(lhs.end_of_storage,rhs.end_of_storage);
+    LightSTL::swap(lhs.start,rhs.start);
+    LightSTL::swap(lhs.finish,rhs.finish);
+    LightSTL::swap(lhs.end_of_storage,rhs.end_of_storage);
 }
 
 /*************************内存管理****************************/
