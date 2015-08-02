@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include<cstdlib>
+#include "../Traits/Traits.h"
 #include "../Allocator/Allocator.h"
 
 namespace LightSTL{
@@ -60,7 +61,7 @@ public:
 	void push_back(const T& val);
 	iterator insert(iterator pos,const T& val);
 	void insert(iterator pos,size_t n,const T& val);
-	iterator insert(iterator pos,iterator lhs,iterator rhs);
+	template<class InputIterator> iterator insert(iterator pos,InputIterator lhs,InputIterator rhs);
 	void resize(size_t n,const T& val = T());
 
 	/*************************删除元素****************************/
@@ -80,6 +81,10 @@ private:
 	T* allocate(size_t n){	return Alloc::allocate(n);}
 	void deallocate(){	Alloc::deallocate(start,capacity());}
 	void allocate_and_fill(size_t n,const T& val);
+
+	//被insert(iterator,InputIterator,InputIterator)调用
+	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,random_access_iterator);
+	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,forward_iterator);
 };
 
 }

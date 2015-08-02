@@ -1,9 +1,9 @@
 #ifndef VECTOR_CPP
 #define VECTOR_CPP
 
+#include "../Traits/Traits.h"
 #include "Vector.h"
 #include "../Allocator/Construct.h"
-
 
 namespace LightSTL{
 
@@ -49,7 +49,7 @@ void vector<T,Alloc>::push_back(const T& val)
 template<class T,class Alloc>
 typename vector<T,Alloc>::iterator vector<T,Alloc>::insert(typename vector<T,Alloc>::iterator pos,const T& val)
 {
-	insert(pos,1,val);
+	insert(pos,1u,val);
 	return pos;
 }
 
@@ -97,50 +97,14 @@ void vector<T,Alloc>::insert(typename vector<T,Alloc>::iterator pos,size_t n,con
 }
 
 template<class T,class Alloc>
+template<class InputIterator>
 typename vector<T,Alloc>::iterator vector<T,Alloc>::insert(typename vector<T,Alloc>::iterator pos,
-                                                           typename vector<T,Alloc>::iterator lhs,
-                                                           typename vector<T,Alloc>::iterator rhs)
+                                                           InputIterator lhs,
+                                                           InputIterator rhs)
 {
-    size_t n = rhs - lhs;
-    //空间足够
-	if(end_of_storage - end() >= n){
-
-		//插入的元素位置在尾部
-		if(pos == end())	LightSTL::uninitialized_copy(lhs,rhs,pos);
-
-		//插入的元素不会到达尾部
-		else if(pos + n < end()){
-			LightSTL::uninitialized_copy(end() - n,end(),end());
-			LightSTL::copy(pos,end() - n,pos + n);
-			LightSTL::copy(lhs,rhs,pos);
-		}
-
-		//插入的元素会到达尾部
-		else{
-			LightSTL::uninitialized_copy(pos,end(),pos + n);
-			LightSTL::copy(lhs,lhs + static_cast<size_t>(end() - pos),pos);
-			LightSTL::uninitialized_copy(lhs + static_cast<size_t>(end() - pos),rhs,end());
-		}
-		finish = finish + n;
-		return pos;
-	}
-
-	//空间不够
-	else{
-		size_t new_capacity = n > capacity() ? n + capacity() : 2 * capacity();
-		T* new_start = allocate(new_capacity);
-		size_t offset = static_cast<size_t>(pos - begin());
-		LightSTL::uninitialized_copy(begin(),pos,new_start);
-		LightSTL::uninitialized_copy(lhs,rhs,new_start + offset);
-		LightSTL::uninitialized_copy(pos,end(),new_start + offset + n);
-		destroy(begin(),end());
-		deallocate();
-		size_t old_size = size();
-		start = new_start;
-		finish = new_start + old_size + n;
-		end_of_storage = start + new_capacity;
-		return start + offset;
-	}
+    typedef typename iterator_traits<InputIterator>::iterator_type iterator_type;
+    iterator_type fuck;
+    return insert_aux(pos,lhs,rhs,fuck);
 }
 
 template<class T,class Alloc>
@@ -211,6 +175,7 @@ void vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
         finish = uninitialized_copy(rhs.start,rhs.finish,start);
     }
     else{
+        destroy(begin(),end());
         deallocate();
         start = allocate(rhs.size());
         finish = uninitialized_copy(rhs.start,rhs.finish,start);
@@ -236,6 +201,108 @@ void vector<T,Alloc>::allocate_and_fill(size_t n,const T& val)
 	end_of_storage = start + n;
 }
 
+template<class T,class Alloc>
+template<class InputIterator>
+typename vector<T,Alloc>::iterator vector<T,Alloc>::insert_aux(typename vector<T,Alloc>::iterator pos,
+                                                               InputIterator lhs,
+                                                               InputIterator rhs,
+                                                               random_access_iterator)
+{
+    size_t n = rhs - lhs;
+    //空间足够
+	if(end_of_storage - end() >= n){
+
+		//插入的元素位置在尾部
+		if(pos == end())	LightSTL::uninitialized_copy(lhs,rhs,pos);
+
+		//插入的元素不会到达尾部
+		else if(pos + n < end()){
+			LightSTL::uninitialized_copy(end() - n,end(),end());
+			LightSTL::copy(pos,end() - n,pos + n);
+			LightSTL::copy(lhs,rhs,pos);
+		}
+
+		//插入的元素会到达尾部
+		else{
+			LightSTL::uninitialized_copy(pos,end(),pos + n);
+			LightSTL::copy(lhs,lhs + static_cast<size_t>(end() - pos),pos);
+			LightSTL::uninitialized_copy(lhs + static_cast<size_t>(end() - pos),rhs,end());
+		}
+		finish = finish + n;
+		return pos;
+	}
+
+	//空间不够
+	else{
+		size_t new_capacity = n > capacity() ? n + capacity() : 2 * capacity();
+		T* new_start = allocate(new_capacity);
+		size_t offset = static_cast<size_t>(pos - begin());
+		LightSTL::uninitialized_copy(begin(),pos,new_start);
+		LightSTL::uninitialized_copy(lhs,rhs,new_start + offset);
+		LightSTL::uninitialized_copy(pos,end(),new_start + offset + n);
+		destroy(begin(),end());
+		deallocate();
+		size_t old_size = size();
+		start = new_start;
+		finish = new_start + old_size + n;
+		end_of_storage = start + new_capacity;
+		return start + offset;
+	}
+}
+
+template<class T,class Alloc>
+template<class InputIterator>
+typename vector<T,Alloc>::iterator vector<T,Alloc>::insert_aux(typename vector<T,Alloc>::iterator pos,
+                                                               InputIterator lhs,
+                                                               InputIterator rhs,
+                                                               forward_iterator)
+{
+    size_t n = 0;
+    InputIterator tmp = lhs;
+    while(tmp != rhs){
+        ++tmp;++n;
+    }
+    //空间足够
+	if(end_of_storage - end() >= n){
+
+		//插入的元素位置在尾部
+		if(pos == end())	LightSTL::uninitialized_copy(lhs,rhs,pos);
+
+		//插入的元素不会到达尾部
+		else if(pos + n < end()){
+			LightSTL::uninitialized_copy(end() - n,end(),end());
+			LightSTL::copy(pos,end() - n,pos + n);
+			LightSTL::copy(lhs,rhs,pos);
+		}
+
+		//插入的元素会到达尾部
+		else{
+			LightSTL::uninitialized_copy(pos,end(),pos + n);
+			LightSTL::copy(lhs,lhs + static_cast<size_t>(end() - pos),pos);
+			LightSTL::uninitialized_copy(lhs + static_cast<size_t>(end() - pos),rhs,end());
+		}
+		finish = finish + n;
+		return pos;
+	}
+
+	//空间不够
+	else{
+		size_t new_capacity = n > capacity() ? n + capacity() : 2 * capacity();
+		T* new_start = allocate(new_capacity);
+		size_t offset = static_cast<size_t>(pos - begin());
+		LightSTL::uninitialized_copy(begin(),pos,new_start);
+		LightSTL::uninitialized_copy(lhs,rhs,new_start + offset);
+		LightSTL::uninitialized_copy(pos,end(),new_start + offset + n);
+		destroy(begin(),end());
+		deallocate();
+		size_t old_size = size();
+		start = new_start;
+		finish = new_start + old_size + n;
+		end_of_storage = start + new_capacity;
+		return start + offset;
+	}
+
+}
 
 }
 

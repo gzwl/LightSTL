@@ -57,6 +57,7 @@ void VectorTest2()
     vec1.insert(vec1.begin(),vec3.begin(),vec3.end());
     assert(vec1 == vec3);
 
+
 }
 
 //删除元素部分测试
