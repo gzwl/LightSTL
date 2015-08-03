@@ -1,4 +1,19 @@
 # LightSTL
+LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合自己的理解进行编写的  
+主要目的在于提高数据结构与算法和C++编程
+
+## LightSTL开发进度
+* 底层配置和主要容器
+    * iterator_traits(100%)
+    * type_traits(100%)
+    * 空间配置器(100%)
+    * vector(100%)
+    * list(20%)
+* 算法库
+    * fill(100%)
+    * fill_n(100%)
+    * copy(100%)
+
 ## LightSTL性能测试
 
 ### vector
