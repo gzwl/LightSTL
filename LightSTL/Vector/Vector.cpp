@@ -23,7 +23,7 @@ vector<T,Alloc>::vector(const size_t n)
 }
 
 template<class T,class Alloc>
-vector<T,Alloc>::vector(const vector& rhs)
+vector<T,Alloc>::vector(const vector<T,Alloc>& rhs)
 {
     size_t n = rhs.size();
     start = allocate(n);
@@ -49,7 +49,7 @@ void vector<T,Alloc>::push_back(const T& val)
 template<class T,class Alloc>
 typename vector<T,Alloc>::iterator vector<T,Alloc>::insert(typename vector<T,Alloc>::iterator pos,const T& val)
 {
-	insert(pos,1u,val);
+	insert(pos,1,val);
 	return pos;
 }
 

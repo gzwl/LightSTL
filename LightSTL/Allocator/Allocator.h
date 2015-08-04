@@ -5,7 +5,7 @@
 
 namespace LightSTL{
 
-template<class T>
+template<class T,class Alloc>
 class allocator
 {
 public:
@@ -13,18 +13,18 @@ public:
 	static T* allocate(size_t n)
 	{
 		if(n == 0)	return 0;
-		else	return static_cast<T*>(alloc::allocate(n*sizeof(T)));
+		else	return static_cast<T*>(Alloc::allocate(n*sizeof(T)));
 	}
 
-	static T* allocate(){	return static_cast<T*>(alloc::allocate(sizeof(T)));}
+	static T* allocate(){	return static_cast<T*>(Alloc::allocate(sizeof(T)));}
 
 	static void deallocate(void *p,size_t n)
 	{
 		if(n == 0)	return ;
-		else	alloc::deallocate(p,n*sizeof(T));
+		else	Alloc::deallocate(p,n*sizeof(T));
 	}
 
-	static void deallocate(void *p){	alloc::deallocate(p,sizeof(T));}
+	static void deallocate(void *p){	Alloc::deallocate(p,sizeof(T));}
 
 };
 

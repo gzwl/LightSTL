@@ -4,6 +4,7 @@
 #include<cstdlib>
 #include "../Traits/Traits.h"
 #include "../Allocator/Allocator.h"
+#include "../Allocator/Alloc.h"
 
 namespace LightSTL{
 
@@ -15,7 +16,7 @@ class vector;
 template<class T,class Alloc>
 void swap(vector<T,Alloc> &lhs,vector<T,Alloc> &rhs);
 
-template<class T,class Alloc = allocator<T> >
+template<class T,class Alloc = LightSTL::alloc >
 class vector
 {
 public:
@@ -24,6 +25,7 @@ public:
 	typedef const T* const_iterator;
 	typedef T& reference;
 	typedef const T& const_reference;
+	typedef allocator<T,Alloc> data_allocator;
 private:
 	T* start;
 	T* finish;
@@ -78,8 +80,8 @@ public:
 
 private:
     /*************************内存管理****************************/
-	T* allocate(size_t n){	return Alloc::allocate(n);}
-	void deallocate(){	Alloc::deallocate(start,capacity());}
+	T* allocate(size_t n){	return data_allocator::allocate(n);}
+	void deallocate(){  data_allocator::deallocate(start,capacity());}
 	void allocate_and_fill(size_t n,const T& val);
 
 	//被insert(iterator,InputIterator,InputIterator)调用
