@@ -62,7 +62,7 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 
 ![](https://github.com/gzwl/Image/blob/master/ListTest1.png)
 
-(1)list \<string\>
+(2)list \<string\>
 ```cpp
 //std::list<std::string> lt   LightSTL::list<std::string> lt 
 clock_t t1 = clock();
