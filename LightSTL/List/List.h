@@ -3,6 +3,7 @@
 
 #include "../Traits/Traits.h"
 #include "../Allocator/Allocator.h"
+#include "../Allocator/Construct.h"
 #include "../Allocator/Alloc.h"
 #include "../Algorithm/Algorithm.h"
 
@@ -12,8 +13,8 @@ namespace LightSTL{
 template<class T>
 struct list_node
 {
-    T* prev;
-    T* next;
+    list_node<T>* prev;
+    list_node<T>* next;
     T data;
 };
 
@@ -44,32 +45,20 @@ struct list_iterator
     }
 
     //自增自减运算符
-    list_iterator& operator++()const {
-        return const_cast<list_iterator&> operator++();
-    }
-    const list_iterator& operator++()const {
+    list_iterator& operator++() {
         node = node->next;
         return *this;
     }
     list_iterator operator++(int) {
-        return const_cast<list_iterator> operator++(0);
-    }
-    const list_iterator operator++(int)const {
         list_iterator tmp = *this;
         ++*this;
         return tmp;
     }
     list_iterator& operator--(){
-        return const_cast<list_iterator&> operator--();
-    }
-    const list_iterator& operator--() const {
         node = node->prev;
         return *this;
     }
     list_iterator operator--(int){
-        return const_cast<list_iterator> operator--(0);
-    }
-    const list_iterator operator--(int) const{
         list_iterator tmp = *this;
         --*this;
         return tmp;
@@ -79,13 +68,7 @@ struct list_iterator
     value_type& operator*(){
         return node->data;
     }
-    const value_type& operator*()const{
-        return node->data;
-    }
     value_type* operator->(){
-        return &(node->data);
-    }
-    const value_type* operator->()const{
         return &(node->data);
     }
 
@@ -96,61 +79,106 @@ class list
 {
 public:
     typedef list_iterator<T> iterator;
-    typedef const list_iterator<T> const_iterator;
+    typedef list_iterator<const T> const_iterator;
     typedef T& reference;
     typedef const T& const_reference;
     typedef list_node<T>* pointer;
+    typedef list_node<const T>* const_pointer;
     typedef allocator<list_node<T>,Alloc>  data_allocator;
 private:
     pointer node;
 
-public:
 	/*************************构造，析构**************************/
+public:
 	list();
 	list(const list&);
+	list(size_t n,const T& val);
 	~list();
 
 	/*************************迭代器相关**************************/
+public:
 	iterator begin(){	return node->next;}
 	iterator end(){	return node;}
-	const_iterator cbegin() const{    return node->next;}
-	const_iterator cend() const {  return node;}
+	const_iterator cbegin() const{    return (const_pointer)(node->next);}
+	const_iterator cend() const {  return (const_pointer)(node);}
 
 	/*************************容量相关****************************/
+public:
 	bool empty() const {	return node->next == node;}
-	size_t size() const {	return distance(node->next,node);}
-	size_t max_size() const {  return distance(node->next,node);}
+	size_t size() const
+	{
+        const_iterator ite = cbegin();
+        size_t n = 0;
+        while(ite != cend()){
+            ++ite;++n;
+        }
+        return  n;
+    }
+	size_t max_size() const {  return size();}
 
 	/*************************访问元素****************************/
+public:
 	reference front() {	return *begin();}
-	reference back() {	return *(end() - 1);}
+	reference back() {	return *(--end());}
 	const_reference front() const{	return *cbegin();}
-	const_reference back() const{	return *(cend() - 1);}
+	const_reference back() const{	return *(--cend());}
 
 	/*************************添加元素****************************/
+public:
 	void push_back(const T& val);
 	void push_front(const T& val);
 	iterator insert(iterator pos,const T& val);
-	void insert(iterator pos,size_t n,const T& val);
-	template<class InputIterator> iterator insert(iterator pos,InputIterator lhs,InputIterator rhs);
-	void resize(size_t n,const T& val = T());
+	iterator insert(iterator pos,size_t n,const T& val);
+	template<class InputIterator>
+	iterator insert(iterator pos,InputIterator lhs,InputIterator rhs);
+	void resize(size_t n,const T& val );
+
+private:
+    //判断InputIterator是否为整数
+    template<class InputIterator>
+    iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,true_type);
+    template<class InputIterator>
+    iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,false_type);
+
+    //被insert(iterator,size_t,const T&)和insert_integer(iterator,InputIterator,InputIterator,true_type)调用
+    iterator insert_n(iterator pos,size_t n,const T& val);
+
+    //被insert_integer(iterator,InputIterator,InputIterator,false_type)调用
+	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,random_access_iterator);
+	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,forward_iterator);
 
 	/*************************删除元素****************************/
+public:
 	void pop_back();
 	void pop_front();
 	void clear();
+	void remove(const T& val);
 	iterator erase(iterator pos);
 	iterator erase(iterator start,iterator finish);
 
 	/*************************关系运算****************************/
-	bool operator==(const list& rhs) const;
-	bool operator!=(const list& rhs) const;
+public:
+	template<class U,class Alloc_>
+	friend bool operator==(const list<U,Alloc_>& lhs,const list<U,Alloc_>& rhs) ;
+	template<class U,class Alloc_>
+	friend bool operator!=(const list<U,Alloc_>& lhs,const list<U,Alloc_>& rhs) ;
 	void operator=(const list& rhs) ;
-	friend void swap<T,Alloc>(vector<T,Alloc>& lhs,vector<T,Alloc>& rhs);
+	template<class U,class Alloc_>
+	friend void swap(list<U,Alloc_>& lhs,list<U,Alloc_>& rhs);
 
-
+	/*************************移动元素****************************/
 private:
+    void transfer(iterator pos,iterator start,iterator finish);
+public:
+    void splice(iterator pos,list& rhs);
+    void splice(iterator pos,iterator ite);
+    void splice(iterator pos,iterator start,iterator finish);
+    void reverse();
+    void merge(list& rhs);
+    void sort();
+
     /*************************内存管理****************************/
+private:
     pointer get_node(){ return data_allocator::allocate(); }
     void put_node(pointer ptr){     return data_allocator::deallocate(ptr);}
     pointer create_node(const T& val)
@@ -165,10 +193,9 @@ private:
         put_node(ptr);
     }
 
+};
 
 }
 
-}
-
-
+#include "List.cpp"
 #endif
