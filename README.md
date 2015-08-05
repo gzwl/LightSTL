@@ -8,11 +8,12 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * type_traits(100%)
     * 空间配置器(100%)
     * vector(100%)
-    * list(20%)
+    * list(100%)
 * 算法库
     * fill(100%)
     * fill_n(100%)
     * copy(100%)
+    * sort(10%) 
 
 ## LightSTL性能测试
 
@@ -44,3 +45,33 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 测试结果：
 
 ![](https://github.com/gzwl/Image/blob/master/vectortest2.png)
+
+
+### list
+(1)list \<int\>
+```cpp
+//std::list<int> lt   LightSTL::list<int> lt 
+clock_t t1 = clock();
+for(int i = 0;i < test_size;i++){
+    lt.push_back(i);
+}
+clock_t t2 = clock();
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+```
+测试结果：
+
+![](https://github.com/gzwl/Image/blob/master/ListTest1.png)
+
+(1)list \<string\>
+```cpp
+//std::list<std::string> lt   LightSTL::list<std::string> lt 
+clock_t t1 = clock();
+for(int i = 0;i < test_size;i++){
+    lt.push_back("Zhang Weiliang");
+}
+clock_t t2 = clock();
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+```
+测试结果：
+
+![](https://github.com/gzwl/Image/blob/master/ListTest2.png)
