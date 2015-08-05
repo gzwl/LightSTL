@@ -107,6 +107,21 @@ struct type_traits<unsigned long>
 	typedef true_type is_POD_type;
 };
 
+template<>
+struct type_traits<long long>
+{
+	typedef true_type has_trivial_destructor_type;
+	typedef true_type has_trivial_assignment_type;
+	typedef true_type is_POD_type;
+};
+
+template<>
+struct type_traits<unsigned long long>
+{
+	typedef true_type has_trivial_destructor_type;
+	typedef true_type has_trivial_assignment_type;
+	typedef true_type is_POD_type;
+};
 
 template<>
 struct type_traits<char>
@@ -150,6 +165,61 @@ struct type_traits<long double>
 	typedef true_type has_trivial_destructor_type;
 	typedef true_type has_trivial_assignment_type;
 	typedef true_type is_POD_type;
+};
+
+/***************integer_traits，用来萃取类的性质***************/
+template<class T>
+struct integer_traits
+{
+    typedef false_type is_integer_type;
+};
+
+template<>
+struct integer_traits<int>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<unsigned int>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<short>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<unsigned short>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<long>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<unsigned long>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<long long>
+{
+    typedef true_type is_integer_type;
+};
+
+template<>
+struct integer_traits<unsigned long long>
+{
+    typedef true_type is_integer_type;
 };
 
 }
