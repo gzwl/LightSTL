@@ -13,7 +13,8 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * fill(100%)
     * fill_n(100%)
     * copy(100%)
-    * sort(10%) 
+    * copy_backward(100%)
+    * sort(30%) 
 
 ## LightSTL性能测试
 
