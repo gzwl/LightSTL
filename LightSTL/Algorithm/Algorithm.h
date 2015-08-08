@@ -61,17 +61,18 @@ InputIterator fill_n(InputIterator start,size_t n,const T& val)
 /**********copy函数**********/
 
 //分支2,value_type有trivial_assignment
-template<class InputIterator,class OutputIterator,class T>
-static InputIterator copy_branch2(InputIterator start,InputIterator finish,OutputIterator des,T*,true_type)
+template<class InputIterator,class OutputIterator>
+static OutputIterator copy_branch2(InputIterator start,InputIterator finish,OutputIterator des,true_type)
 {
+    typedef typename iterator_traits<InputIterator>::value_type T;
 	size_t n = finish - start;
 	memmove(des,start,n * sizeof(T));
 	return des + n;
 }
 
 //分支2,value_type有nontrivial_assignment
-template<class InputIterator,class OutputIterator,class T>
-static OutputIterator copy_branch2(InputIterator start,InputIterator finish,OutputIterator des,T*,false_type)
+template<class InputIterator,class OutputIterator>
+static OutputIterator copy_branch2(InputIterator start,InputIterator finish,OutputIterator des,false_type)
 {
 	size_t n = finish - start;
 	while(n--){
@@ -81,20 +82,15 @@ static OutputIterator copy_branch2(InputIterator start,InputIterator finish,Outp
 }
 
 
-//萃取出迭代器的value_type
-template<class InputIterator,class OutputIterator,class T>
-static OutputIterator copy_get_value_type(InputIterator start,InputIterator finish,OutputIterator des,T*)
-{
-	typedef typename type_traits<T>::has_trivial_assignment_type has_trivial_assignment;
-	return copy_branch2(start,finish,des,static_cast<T*>(0),has_trivial_assignment());
-}
-
-
 //分支1，迭代器random_access_iterator
 template<class InputIterator,class OutputIterator>
 static OutputIterator copy_branch1(InputIterator start,InputIterator finish,OutputIterator des,random_access_iterator)
 {
-	return copy_get_value_type(start,finish,des,&*start);
+    size_t n = finish - start;
+	while(n--){
+		*des++ = *start++;
+	}
+	return des;
 }
 
 //分支1，迭代器为forward_iterator
@@ -107,13 +103,96 @@ static OutputIterator copy_branch1(InputIterator start,InputIterator finish,Outp
 	return des;
 }
 
-//唯一对外接口
+//三个对外接口
 template<class InputIterator,class OutputIterator>
 OutputIterator copy(InputIterator start,InputIterator finish,OutputIterator des)
 {
 	typedef typename iterator_traits<InputIterator>::iterator_type iterator_type;
 	return copy_branch1(start,finish,des,iterator_type());
 }
+
+template<class T>
+T* copy(T* start,T* finish,T* des)
+{
+	typedef typename type_traits<T>::has_trivial_assignment_type trivial_assignment;
+	return copy_branch2(start,finish,des,trivial_assignment());
+}
+
+template<class T>
+T* copy(const T* start,const T* finish,T* des)
+{
+	typedef typename type_traits<T>::has_trivial_assignment_type trivial_assignment;
+	return copy_branch2(start,finish,des,trivial_assignment());
+}
+
+/**********copy_backward函数**********/
+
+//分支2,value_type有trivial_assignment
+template<class InputIterator,class OutputIterator>
+static OutputIterator copy_backward_branch2(InputIterator start,InputIterator finish,OutputIterator des,true_type)
+{
+    typedef typename iterator_traits<InputIterator>::value_type T;
+	size_t n = finish - start;
+	memmove(des - n,start,n * sizeof(T));
+	return des - n;
+}
+
+//分支2,value_type有nontrivial_assignment
+template<class InputIterator,class OutputIterator>
+static OutputIterator copy_backward_branch2(InputIterator start,InputIterator finish,OutputIterator des,false_type)
+{
+	size_t n = finish - start;
+	while(n--){
+		*--des = *--finish;
+	}
+	return des;
+}
+
+
+//分支1，迭代器random_access_iterator
+template<class InputIterator,class OutputIterator>
+static OutputIterator copy_backward_branch1(InputIterator start,InputIterator finish,OutputIterator des,random_access_iterator)
+{
+    size_t n = finish - start;
+	while(n--){
+		*--des = *--finish;
+	}
+	return des;
+}
+
+//分支1，迭代器为bidirection_iterator
+template<class InputIterator,class OutputIterator>
+static OutputIterator copy_backward_branch1(InputIterator start,InputIterator finish,OutputIterator des,bidirection_iterator)
+{
+	while(start != finish){
+		*--des = *--finish;
+	}
+	return des;
+}
+
+//三个对外接口
+template<class InputIterator,class OutputIterator>
+OutputIterator copy_backward(InputIterator start,InputIterator finish,OutputIterator des)
+{
+	typedef typename iterator_traits<InputIterator>::iterator_type iterator_type;
+	return copy_backward_branch1(start,finish,des,iterator_type());
+}
+
+template<class T>
+T* copy_backward(T* start,T* finish,T* des)
+{
+	typedef typename type_traits<T>::has_trivial_assignment_type trivial_assignment;
+	return copy_backward_branch2(start,finish,des,trivial_assignment());
+}
+
+template<class T>
+T* copy_backward(const T* start,const T* finish,T* des)
+{
+	typedef typename type_traits<T>::has_trivial_assignment_type trivial_assignment;
+	return copy_backward_branch2(start,finish,des,trivial_assignment());
+}
+
+
 
 /**********swap函数**********/
 
@@ -123,6 +202,31 @@ void swap(T& lhs,T& rhs)
     T tmp = lhs;
     lhs = rhs;
     rhs = tmp;
+}
+
+/**********sort函数**********/
+
+//插入排序
+template<class RandomAccessIterator>
+static void insert_sort(RandomAccessIterator lhs,RandomAccessIterator rhs)
+{
+    if(lhs == rhs)  return ;
+    typedef typename iterator_traits<RandomAccessIterator>::value_type T;
+    for(RandomAccessIterator i = lhs + 1;i < rhs;++i){
+        T val = *i;
+        if(val < *lhs){
+            copy_backward(lhs,i,i + 1);
+            *lhs = val;
+        }
+        else{
+            RandomAccessIterator j = i;
+            while(val < *(j - 1)){
+                *j = *(j - 1);
+                --j;
+            }
+            *j = val;
+        }
+    }
 }
 
 
