@@ -193,6 +193,69 @@ T* copy_backward(const T* start,const T* finish,T* des)
 }
 
 
+/**********equal函数**********/
+template<class InputIterator1,class InputIterator2>
+bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2)
+{
+    while(start1 != finish1){
+        if(*start1++ != *start2++)  return false;
+    }
+    return true;
+}
+
+template<class InputIterator1,class InputIterator2,class Compare>
+bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2,Compare cmp)
+{
+    while(start1 != finish1){
+        if(!cmp(*start1++,*start2++))  return false;
+    }
+    return true;
+}
+
+/**********lower_bound函数**********/
+
+//operator<版本
+template<class InputIterator,class T>
+InputIterator lower_bound_aux(InputIterator start,InputIterator finish,const T& val,random_access_iterator)
+{
+    while(finish - start > 0){
+        size_t len = finish - start;
+        InputIterator mid = start + len / 2;
+        if(*mid >= val)     finish = mid;
+        else    start = mid + 1;
+    }
+    return finish;
+}
+
+
+template<class InputIterator,class T>
+InputIterator lower_bound(InputIterator start,InputIterator finish,const T& val)
+{
+    typedef typename iterator_traits<InputIterator>::iterator_type iterator_type;
+    return lower_bound_aux(start,finish,val,iterator_type());
+}
+
+//仿函数版本
+template<class InputIterator,class T,class Compare>
+InputIterator lower_bound_aux(InputIterator start,InputIterator finish,const T& val,random_access_iterator,Compare smaller)
+{
+    while(finish - start > 0){
+        size_t len = finish - start;
+        InputIterator mid = start + len / 2;
+        if(!smaller(*mid,val))     finish = mid;
+        else    start = mid + 1;
+    }
+    return finish;
+}
+
+
+template<class InputIterator,class T,class Compare>
+InputIterator lower_bound(InputIterator start,InputIterator finish,const T& val,Compare smaller)
+{
+    typedef typename iterator_traits<InputIterator>::iterator_type iterator_type;
+    return lower_bound_aux(start,finish,val,iterator_type(),smaller);
+}
+
 
 /**********swap函数**********/
 
