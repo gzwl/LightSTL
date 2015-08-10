@@ -7,8 +7,10 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * iterator_traits(100%)
     * type_traits(100%)
     * 空间配置器(100%)
+    * functor(60%)
     * vector(100%)
     * list(100%)
+    * hash_table(70%)
 * 算法库
     * fill(100%)
     * fill_n(100%)
