@@ -30,6 +30,7 @@ public:
     typedef T value_type;
 
 private:
+    friend class hash_table<T,HashFun,GetKey,EqualKey,Alloc>;
     typedef hashtable_node<T> node;
     typedef hash_table<T,HashFun,GetKey,EqualKey,Alloc> hashtable;
     typedef hashtable_iterator<T,HashFun,GetKey,EqualKey,Alloc> self;
@@ -103,6 +104,10 @@ private:
 private:
     friend class hashtable_iterator<T,HashFun,GetKey,EqualKey,Alloc>;
     typedef hashtable_node<T> node;
+    typedef hashtable_node<T>* pointer;
+    typedef hashtable_node<const T>* const_pointer;
+    typedef hash_table<T,HashFun,GetKey,EqualKey,Alloc> self;
+    typedef hash_table<const T,HashFun,GetKey,EqualKey,Alloc> const_self;
     typedef LightSTL::allocator<node,Alloc> data_allocator;
 
     HashFun hash;
@@ -119,7 +124,7 @@ public:
     {
         buckets.resize(get_next(n),(node*)(0));
     }
-	hash_table(const hash_table& rhs):num_elements(rhs.elements),buckets(rhs.buckets){}
+	hash_table(const hash_table& rhs);
 	~hash_table();
 
 	/*************************迭代器相关**************************/
@@ -132,12 +137,12 @@ public:
 	}
 	const_iterator cend() const
 	{
-        return const_iterator((hashtable_node<const T>*)0,this);
+        return const_iterator((const_pointer)0,(const_self*)this);
 	}
 
 	/*************************容量相关****************************/
 public:
-	bool empty() const {	return num_elements;}
+	bool empty() const {	return num_elements == 0;}
 	size_t size() const {	return num_elements;}
 	size_t bucket_count() const{    return buckets.size();}
 
@@ -153,6 +158,8 @@ private:
     /*************************删除元素****************************/
 public:
     void clear();
+    void erase(iterator pos);
+    size_t erase(const T& val);
 
     /*************************访问元素****************************/
 public:

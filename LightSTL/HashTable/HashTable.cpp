@@ -19,8 +19,26 @@ const unsigned long hash_table<T,HashFun,GetKey,EqualKey,Alloc>::prime_list[28] 
 };
 
 /*************************构造，析构**************************/
+
 template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
-hash_table<T,HashFun,GetKey,EqualKey,Alloc>::~hash_table<T,HashFun,GetKey,EqualKey,Alloc>()
+hash_table<T,HashFun,GetKey,EqualKey,Alloc>::hash_table(const hash_table<T,HashFun,GetKey,EqualKey,Alloc> &rhs)
+{
+    num_elements = rhs.num_elements;
+    buckets.resize(rhs.buckets.size(),(node*)0);
+    for(size_t i = 0;i < rhs.buckets.size();i++) if(rhs.buckets[i]){
+        buckets[i] = create_node(rhs.buckets[i]->data);
+        node* cur = buckets[i];
+        node* rhscur = rhs.buckets[i];
+        while(rhscur->next){
+            cur->next = create_node(rhscur->next->data);
+            cur = cur->next;
+            rhscur = rhscur->next;
+        }
+    }
+}
+
+template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
+hash_table<T,HashFun,GetKey,EqualKey,Alloc>::~hash_table()
 {
     clear();
 }
@@ -44,10 +62,10 @@ hash_table<T,HashFun,GetKey,EqualKey,Alloc>::cbegin() const
 {
     for(size_t i = 0;i < buckets.size();i++){
         if(buckets[i]){
-            return const_iterator((hashtable_node<const T>*)buckets[i],this);
+            return const_iterator((const_pointer)buckets[i],(const_self*)this);
         }
     }
-    return const_iterator((hashtable_node<const T>*)(0),this);
+    return const_iterator((const_pointer)(0),(const_self*)this);
 }
 
 /*************************添加元素****************************/
@@ -115,7 +133,9 @@ hash_table<T,HashFun,GetKey,EqualKey,Alloc>::insert_equal_noresize(const T& val)
     node *cur = buckets[id];
     while(cur){
         if(equal_key(get_key(val),get_key(cur->data))){
-            cur->next = create_node(val);
+            node* tmp = create_node(val);
+            tmp->next = cur->next;
+            cur->next = tmp;
             num_elements++;
             return iterator(cur->next,this);
         }
@@ -137,7 +157,56 @@ void hash_table<T,HashFun,GetKey,EqualKey,Alloc>::clear()
             destroy_node(cur);
         }
     }
+    num_elements = 0;
 }
+
+template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
+void hash_table<T,HashFun,GetKey,EqualKey,Alloc>::erase(hash_table<T,HashFun,GetKey,EqualKey,Alloc>::iterator pos)
+{
+    size_t id = get_id(get_key(*pos));
+    if(buckets[id] == pos.cur){
+        buckets[id] = buckets[id]->next;
+        destroy_node(pos.cur);
+        num_elements--;
+        return ;
+    }
+    node* cur = buckets[id];
+    while(cur->next){
+        if(cur->next == pos.cur){
+            cur->next = pos.cur->next;
+            destroy_node(pos.cur);
+            num_elements--;
+            return ;
+        }
+        cur = cur->next;
+    }
+}
+
+template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
+size_t hash_table<T,HashFun,GetKey,EqualKey,Alloc>::erase(const T& val)
+{
+    size_t id = get_id(get_key(val));
+    size_t num = 0;
+    while(buckets[id] && equal_key(get_key(val),get_key(buckets[id]->data))){
+        num++;
+        node *tmp = buckets[id];
+        buckets[id] = buckets[id]->next;
+        destroy_node(tmp);
+    }
+    node* cur = buckets[id];
+    while(cur && cur->next){
+        if(equal_key(get_key(val),get_key(cur->next->data))){
+            num++;
+            node *tmp = cur->next;
+            cur->next = tmp->next;
+            destroy_node(tmp);
+        }
+        else cur = cur->next;
+    }
+    num_elements -= num;
+    return num;
+}
+
 
 /*************************访问元素****************************/
 template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>

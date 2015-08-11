@@ -204,10 +204,10 @@ bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2)
 }
 
 template<class InputIterator1,class InputIterator2,class Compare>
-bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2,Compare cmp)
+bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2,Compare eq)
 {
     while(start1 != finish1){
-        if(!cmp(*start1++,*start2++))  return false;
+        if(eq(*start1++,*start2++))  return false;
     }
     return true;
 }
