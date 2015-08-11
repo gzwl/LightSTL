@@ -2,6 +2,7 @@
 LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合自己的理解进行编写的  
 主要目的在于提高数据结构与算法和C++编程
 
+
 ## LightSTL开发进度
 * 底层配置和主要容器
     * iterator_traits(100%)
@@ -10,7 +11,8 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * functor(60%)
     * vector(100%)
     * list(100%)
-    * hash_table(70%)
+    * hash_table(100%)
+    * hash_map(10%)
 * 算法库
     * fill(100%)
     * fill_n(100%)
@@ -18,7 +20,21 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * copy_backward(100%)
     * sort(30%) 
 
+
+## LightSTL单元测试（语句覆盖）
+* 主要容器
+    * vector(100%)
+    * list(100%)
+    * hash_table(100%)
+* 算法库
+    * fill(100%)
+    * fill_n(100%)
+    * copy(100%)
+    * copy_backward(100%) 
+
+
 ## LightSTL性能测试
+
 
 ### vector
 (1)vector \<int\>
@@ -78,3 +94,19 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 测试结果：
 
 ![](https://github.com/gzwl/Image/blob/master/ListTest2.png)
+
+### hash_table 
+```cpp
+LightSTL::hash_table<int> htb;
+for(int i = 0;i < 2000000;i++){
+      if(i == 7 || i == 46 || i == 9589)  continue;
+      htb.insert_unique(i);
+}
+assert(htb.size() == 1999997);
+LightSTL::hash_table<int>::iterator ite;
+for(int i = 0;i < 2000000;i++){
+      if(i == 7 || i == 46 || i == 9589)
+            assert(htb.find(i) == htb.end());
+      else    
+            assert(*htb.find(i) == i);
+}
