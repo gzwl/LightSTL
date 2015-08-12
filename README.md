@@ -38,25 +38,32 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
 
 
 ### vector
-(1)vector \<int\>
+(1)vector \<double\>
 ```cpp
 //std::vector<double> vec   LightSTL::vector<double> vec 
-clock_t t1 = clock();
-for(int i = 0;i < test_size;i++){
-    vec.push_back(i);
-}
-clock_t t2 = clock();
-printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+clock_t t1 = clock(); 
+for(int i = 0;i < TestSize;i++){ 
+    vec.push_back(i); 
+} 
+clock_t t2 = clock(); 
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC); 
 ```
 测试结果：
 
-![](https://github.com/gzwl/Image/blob/master/vectortest1.png)
+|Container                 | TestSize |Time (ms)|
+|--------------------------|---------:|--------:|
+|LightSTL::vector\<double\>|      10^5|        2|
+|LightSTL::vector\<double\>|      10^6|       15|
+|LightSTL::vector\<double\>|      10^7|      114|
+|std::vector\<double\>     |      10^5|        2|
+|std::vector\<double\>     |      10^6|        9|
+|std::vector\<double\>     |      10^7|       73|
 
 (2)vector \<string\>
 ```cpp
 //std::vector<std::string> vec  LightSTL::vector<std::string> vec
 clock_t t1 = clock();
-for(int i = 0;i < test_size;i++){
+for(int i = 0;i < TestSize;i++){
     vec.push_back(std::string("Hello World"));
 }
 clock_t t2 = clock();
@@ -64,15 +71,22 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 ```
 测试结果：
 
-![](https://github.com/gzwl/Image/blob/master/vectortest2.png)
+|Container                      | TestSize |Time (ms)|
+|-------------------------------|---------:|--------:|
+|LightSTL::vector\<std::string\>|      10^5|       11|
+|LightSTL::vector\<std::string\>|      10^6|       98|
+|LightSTL::vector\<std::string\>|      10^7|      977|
+|std::vector\<std::string\>     |      10^5|       10|
+|std::vector\<std::string\>     |      10^6|       84|
+|std::vector\<std::string\>     |      10^7|      916|
 
 
 ### list
-(1)list \<int\>
+(1)list \<double\>
 ```cpp
-//std::list<int> lt   LightSTL::list<int> lt 
+//std::list<double> lt   LightSTL::list<double> lt 
 clock_t t1 = clock();
-for(int i = 0;i < test_size;i++){
+for(int i = 0;i < TestSize;i++){
     lt.push_back(i);
 }
 clock_t t2 = clock();
@@ -80,21 +94,35 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 ```
 测试结果：
 
-![](https://github.com/gzwl/Image/blob/master/ListTest1.png)
+|Container               | TestSize |Time (ms)|
+|------------------------|---------:|--------:|
+|LightSTL::list\<double\>|      10^5|        2|
+|LightSTL::list\<double\>|      10^6|       13|
+|LightSTL::list\<double\>|      10^7|      104|
+|std::list\<double\>     |      10^5|        2|
+|std::list\<double\>     |      10^6|       11|
+|std::list\<double\>     |      10^7|       86|
 
 (2)list \<string\>
 ```cpp
 //std::list<std::string> lt   LightSTL::list<std::string> lt 
 clock_t t1 = clock();
-for(int i = 0;i < test_size;i++){
-    lt.push_back("Zhang Weiliang");
+for(int i = 0;i < TestSize;i++){
+    lt.push_back(std::string("Zhang Weiliang"));
 }
 clock_t t2 = clock();
 printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 ```
 测试结果：
 
-![](https://github.com/gzwl/Image/blob/master/ListTest2.png)
+|Container                    | TestSize |Time (ms)|
+|-----------------------------|---------:|--------:|
+|LightSTL::list\<std::string\>|      10^5|       10|
+|LightSTL::list\<std::string\>|      10^6|       88|
+|LightSTL::list\<std::string\>|      10^7|      792|
+|std::list\<std::string\>     |      10^5|       11|
+|std::list\<std::string\>     |      10^6|       91|
+|std::list\<std::string\>     |      10^7|      924|
 
 ### hash_table 
 ```cpp
