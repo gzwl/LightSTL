@@ -4,7 +4,6 @@
 #include "../Traits/Traits.h"
 #include "Vector.h"
 #include "../Allocator/Construct.h"
-
 namespace LightSTL{
 
 
@@ -23,7 +22,7 @@ vector<T,Alloc>::vector(const size_t n)
 }
 
 template<class T,class Alloc>
-vector<T,Alloc>::vector(const vector<T,Alloc>& rhs)
+vector<T,Alloc>::vector(const vector& rhs)
 {
     size_t n = rhs.size();
     start = allocate(n);
@@ -267,10 +266,10 @@ bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 }
 
 template<class T,class Alloc>
-void vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
+vector<T,Alloc>& vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
 {
     //赋值的右值为本身
-    if(start == rhs.start)  return ;
+    if(start == rhs.start)  return *this;
     destroy(start,finish);
     if(size() >= rhs.size()){
         finish = uninitialized_copy(rhs.start,rhs.finish,start);
@@ -282,6 +281,7 @@ void vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
         finish = uninitialized_copy(rhs.start,rhs.finish,start);
         end_of_storage = finish;
     }
+    return *this;
 }
 
 template<class T,class Alloc>

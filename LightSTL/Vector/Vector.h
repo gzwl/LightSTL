@@ -101,7 +101,7 @@ public:
 	friend bool operator==(const vector<U,Alloc_>& lhs,const vector<U,Alloc_>& rhs) ;
 	template<class U,class Alloc_>
 	friend bool operator!=(const vector<U,Alloc_>& lhs,const vector<U,Alloc_>& rhs) ;
-	void operator=(const vector& rhs) ;
+	vector& operator=(const vector& rhs) ;
 	template<class U,class Alloc_>
 	friend void swap(vector<U,Alloc_>& lhs,vector<U,Alloc_>& rhs);
 

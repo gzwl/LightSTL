@@ -112,8 +112,6 @@ typename list<T,Alloc>::iterator list<T,Alloc>::insert_n(typename list<T,Alloc>:
 
         tmp = tmp->next;
     }
-    tmp->next = pos.node;
-    pos.node->prev = tmp;
     return fa->next;
 }
 
@@ -266,10 +264,11 @@ bool operator!=(const list<T,Alloc>& lhs,const list<T,Alloc>& rhs)
 }
 
 template<class T,class Alloc>
-void list<T,Alloc>::operator=(const list<T,Alloc>& rhs)
+list<T,Alloc>& list<T,Alloc>::operator=(const list<T,Alloc>& rhs)
 {
     clear();
     insert(begin(),rhs.cbegin(),rhs.cend());
+    return *this;
 }
 
 template<class T,class Alloc>

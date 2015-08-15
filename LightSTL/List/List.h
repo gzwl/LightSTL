@@ -162,7 +162,7 @@ public:
 	friend bool operator==(const list<U,Alloc_>& lhs,const list<U,Alloc_>& rhs) ;
 	template<class U,class Alloc_>
 	friend bool operator!=(const list<U,Alloc_>& lhs,const list<U,Alloc_>& rhs) ;
-	void operator=(const list& rhs) ;
+	list& operator=(const list& rhs) ;
 	template<class U,class Alloc_>
 	friend void swap(list<U,Alloc_>& lhs,list<U,Alloc_>& rhs);
 

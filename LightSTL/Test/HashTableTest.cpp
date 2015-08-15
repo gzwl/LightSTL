@@ -53,7 +53,7 @@ void HashTableTestAll()
 {
     HashTableTest1();
     HashTableTest2();
-    std::cout << "HashTable pass the test" << std::endl;
+    std::cout << "HashTable pass the test!" << std::endl;
 }
 
 }
