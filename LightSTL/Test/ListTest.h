@@ -1,3 +1,6 @@
+#ifndef LISTTEST_H
+#define LISTTEST_H
+
 namespace LightSTL{
 
 //添加元素部分测试
@@ -21,3 +24,5 @@ void ListTestAll();
 
 
 }
+
+#endif // LISTTEST_H

@@ -6,7 +6,12 @@ namespace LightSTL{
 template<class T1,class T2>
 class pair
 {
+
 public:
+
+    typedef T1 first_type;
+    typedef T2 second_type;
+
     T1 first;
     T2 second;
 

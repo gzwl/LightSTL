@@ -1,3 +1,6 @@
+#ifndef VECTORTEST_H
+#define VECTORTEST_H
+
 namespace LightSTL{
 
 //添加元素部分测试
@@ -17,3 +20,5 @@ void VectorTestAll();
 
 
 }
+
+#endif

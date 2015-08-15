@@ -110,7 +110,22 @@ struct less_equal
     }
 };
 
+/***************选择类仿函数***************/
+template<class Pair>
+struct select1st
+{
+    const typename Pair::first_type& operator()(const Pair& rhs){
+        return rhs.first;
+    }
+};
 
+template<class Pair>
+struct select2nd
+{
+    const typename Pair::second_type& operator()(const Pair& rhs){
+        return rhs.second;
+    }
+};
 
 }
 

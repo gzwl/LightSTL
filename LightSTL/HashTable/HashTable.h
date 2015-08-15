@@ -120,9 +120,12 @@ private:
 
     /*************************构造，析构**************************/
 public:
-    explicit hash_table(size_t n = 0):num_elements(0)
+    hash_table(size_t n = 0,
+               const HashFun& hf = HashFun(),
+               const GetKey& gk = GetKey(),
+               const EqualKey& ek = EqualKey()):num_elements(0),hash(hf),get_key(gk),equal_key(ek)
     {
-        buckets.resize(get_next(n),(node*)(0));
+        buckets.resize(get_next(n),(node*)0);
     }
 	hash_table(const hash_table& rhs);
 	~hash_table();
@@ -168,8 +171,10 @@ public:
 
     /*************************辅助函数****************************/
 private:
-    size_t get_id(const T& val){    return get_id(val,buckets.size());}
-    size_t get_id(const T& val,size_t m){   return hash(val)%m;}
+    template<class Key>
+    size_t get_id(const Key& val){    return get_id(val,buckets.size());}
+    template<class Key>
+    size_t get_id(const Key& val,size_t m){   return hash(val)%m;}
 
     /*************************空间管理****************************/
 private:
