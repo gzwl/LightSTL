@@ -11,6 +11,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * functor(60%)
     * vector(100%)
     * list(100%)
+    * queue(100%)
     * pair(100%)
     * hash_table(100%)
     * hash_map(10%)
@@ -26,6 +27,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
 * 主要容器
     * vector(100%)
     * list(100%)
+    * queue(100%)
     * hash_table(100%)
 * 算法库
     * fill(100%)
