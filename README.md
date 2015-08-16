@@ -8,14 +8,14 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * iterator_traits(100%)
     * type_traits(100%)
     * 空间配置器(100%)
-    * functor(60%)
+    * functor(70%)
     * vector(100%)
     * list(100%)
     * queue(100%)
     * stack(100%)
     * pair(100%)
     * hash_table(100%)
-    * hash_map(60%)
+    * hash_map(100%)
 * 算法库
     * fill(100%)
     * fill_n(100%)
@@ -31,6 +31,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * queue(100%)
     * stack(100%)
     * hash_table(100%)
+    * hash_map(100%)
 * 算法库
     * fill(100%)
     * fill_n(100%)
@@ -40,6 +41,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
 
 ## LightSTL性能测试
 
+### 测试环境： Ubuntu14.04 && gcc-4.8.2 && release模式 
 
 ### vector
 (1)vector \<double\>
@@ -127,6 +129,38 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 |std::list\<std::string\>     |      10^5|       11|
 |std::list\<std::string\>     |      10^6|       91|
 |std::list\<std::string\>     |      10^7|      924|
+
+(3)list.sort()
+```cpp
+srand((unsigned)time(0));
+std::list<int> lt1;
+LightSTL::list<int> lt2 ;
+for(int i = 0;i < TestSize;i++){
+    int tmp = rand();
+    lt1.push_back(tmp);
+    lt2.push_back(tmp);
+}
+
+clock_t t1 = clock();
+lt1.sort();
+clock_t t2 = clock();
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+
+clock_t t3 = clock();
+lt2.sort();
+clock_t t4 = clock();
+printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
+```
+测试结果：
+
+|Container                 | TestSize |Time (ms)|
+|--------------------------|---------:|--------:|
+|LightSTL::list\<std::int\>|      10^5|       18|
+|LightSTL::list\<std::int\>|      10^6|      336|
+|LightSTL::list\<std::int\>|      10^7|     5113|
+|std::list\<std::int\>     |      10^5|       22|
+|std::list\<std::int\>     |      10^6|      372|
+|std::list\<std::int\>     |      10^7|     6220|
 
 ### hash_table 
 ```cpp
