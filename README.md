@@ -12,6 +12,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * vector(100%)
     * list(100%)
     * queue(100%)
+    * priority_queue(100%)
     * stack(100%)
     * pair(100%)
     * hash_table(100%)
@@ -21,6 +22,10 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * fill_n(100%)
     * copy(100%)
     * copy_backward(100%)
+    * push_heap(100%)
+    * pop_heap(100%)
+    * make_heap(100%)
+    * sort_heap(100%)
     * sort(30%) 
 
 
@@ -29,6 +34,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * vector(100%)
     * list(100%)
     * queue(100%)
+    * priority_queue(100%)
     * stack(100%)
     * hash_table(100%)
     * hash_map(100%)
@@ -37,6 +43,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * fill_n(100%)
     * copy(100%)
     * copy_backward(100%) 
+    * sort_heap(100%)
 
 
 ## LightSTL性能测试
@@ -161,6 +168,29 @@ printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
 |std::list\<int\>     |      10^5|       22|
 |std::list\<int\>     |      10^6|      372|
 |std::list\<int\>     |      10^7|     6220|
+
+### priority_queue
+(1)priority_queue\<int\>
+```cpp
+//std::priority_queue<int> q   LightSTL::priority_queue<int> q 
+clock_t t1 = clock(); 
+for(int i = 0;i < TestSize;i++){ 
+    q.push(i); 
+} 
+clock_t t2 = clock(); 
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC); 
+```
+测试结果：
+
+|Container                      | TestSize |Time (ms)|
+|-------------------------------|---------:|--------:|
+|LightSTL::priority_queue\<int\>|      10^5|        3|
+|LightSTL::priority_queue\<int\>|      10^6|       32|
+|LightSTL::priority_queue\<int\>|      10^7|      354|
+|std::priority_queue\<int\>     |      10^5|        8|
+|std::priority_queue\<int\>     |      10^6|       54|
+|std::priority_queue\<int\>     |      10^7|      625| 
+
 
 ### hash_table 
 ```cpp
