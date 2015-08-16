@@ -13,6 +13,7 @@ void HashTableTest1()
         htb.insert_unique(i);
     }
     assert(htb.size() == 1999997);
+    assert(htb.count(1) == 1);
     LightSTL::hash_table<int>::iterator ite;
     for(int i = 0;i < 2000000;i++){
         if(i == 7 || i == 46 || i == 9589){

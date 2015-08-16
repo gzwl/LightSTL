@@ -21,9 +21,12 @@ const unsigned long hash_table<T,HashFun,GetKey,EqualKey,Alloc>::prime_list[28] 
 /*************************构造，析构**************************/
 
 template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
-hash_table<T,HashFun,GetKey,EqualKey,Alloc>::hash_table(const hash_table<T,HashFun,GetKey,EqualKey,Alloc> &rhs)
+hash_table<T,HashFun,GetKey,EqualKey,Alloc>::hash_table(
+    const hash_table<T,HashFun,GetKey,EqualKey,Alloc> &rhs):num_elements(rhs.num_elements),
+                                                            hash(rhs.hash),
+                                                            get_key(rhs.get_key),
+                                                            equal_key(rhs.equal_key)
 {
-    num_elements = rhs.num_elements;
     buckets.resize(rhs.buckets.size(),(node*)0);
     for(size_t i = 0;i < rhs.buckets.size();i++) if(rhs.buckets[i]){
         buckets[i] = create_node(rhs.buckets[i]->data);
@@ -209,6 +212,21 @@ size_t hash_table<T,HashFun,GetKey,EqualKey,Alloc>::erase(const T& val)
 
 
 /*************************访问元素****************************/
+template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
+size_t hash_table<T,HashFun,GetKey,EqualKey,Alloc>::count(const T& val) const
+{
+    size_t id = get_id(get_key(val));
+    node* cur = buckets[id];
+    size_t res = 0;
+    while(cur){
+        if(equal_key(get_key(val),get_key(cur->data))){
+            ++res;
+        }
+        cur = cur->next;
+    }
+    return res;
+}
+
 template<class T,class HashFun,class GetKey ,class EqualKey,class Alloc>
 typename hash_table<T,HashFun,GetKey,EqualKey,Alloc>::iterator
 hash_table<T,HashFun,GetKey,EqualKey,Alloc>::find(const T& val)

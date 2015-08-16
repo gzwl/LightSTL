@@ -55,6 +55,9 @@ public:
 	size_t size() const {
         return c.size();
     }
+    size_t bucket_count() const {
+        return c.bucket_count();
+    }
 
 	/*************************添加元素****************************/
 public:
@@ -76,6 +79,9 @@ public:
 
     /*************************访问元素****************************/
 public:
+    size_t count(const Key& rhs) const{
+        return c.count(make_pair(rhs,Val()));
+    }
     iterator find(const Key& rhs) {
         return c.find(make_pair(rhs,Val()));
     }

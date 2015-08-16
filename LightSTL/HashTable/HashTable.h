@@ -44,12 +44,14 @@ public:
     hashtable_iterator(const self& rhs):cur(rhs.cur),ht(rhs.ht){}
 
     value_type& operator*(){return cur->data;}
+    const value_type& operator*()const{return cur->data;}
     value_type* operator->(){return &(cur->data);}
+    const value_type* operator->()const{return &(cur->data);}
 
     self& operator++()
     {
         if(!cur->next){
-            size_t n = ht->get_id(cur->data) + 1;
+            size_t n = ht->get_id(ht->get_key(cur->data)) + 1;
             cur = cur->next;
             while(!cur && n < ht->buckets.size()){
                 cur = ht->buckets[n++];
@@ -62,7 +64,7 @@ public:
     self operator++(int)
     {
         self tmp = *this;
-        ++*this;
+        ++(*this);
         return tmp;
     }
 
@@ -166,15 +168,16 @@ public:
 
     /*************************访问元素****************************/
 public:
+    size_t count(const T& val) const;
     iterator find(const T& val);
     const_iterator find(const T& val)const;
 
     /*************************辅助函数****************************/
 private:
     template<class Key>
-    size_t get_id(const Key& val){    return get_id(val,buckets.size());}
+    size_t get_id(const Key& val)const{    return get_id(val,buckets.size());}
     template<class Key>
-    size_t get_id(const Key& val,size_t m){   return hash(val)%m;}
+    size_t get_id(const Key& val,size_t m)const{   return hash(val)%m;}
 
     /*************************空间管理****************************/
 private:
