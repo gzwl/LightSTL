@@ -153,14 +153,14 @@ printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
 ```
 测试结果：
 
-|Container                 | TestSize |Time (ms)|
-|--------------------------|---------:|--------:|
-|LightSTL::list\<std::int\>|      10^5|       18|
-|LightSTL::list\<std::int\>|      10^6|      336|
-|LightSTL::list\<std::int\>|      10^7|     5113|
-|std::list\<std::int\>     |      10^5|       22|
-|std::list\<std::int\>     |      10^6|      372|
-|std::list\<std::int\>     |      10^7|     6220|
+|Container            | TestSize |Time (ms)|
+|---------------------|---------:|--------:|
+|LightSTL::list\<int\>|      10^5|       18|
+|LightSTL::list\<int\>|      10^6|      336|
+|LightSTL::list\<int\>|      10^7|     5113|
+|std::list\<int\>     |      10^5|       22|
+|std::list\<int\>     |      10^6|      372|
+|std::list\<int\>     |      10^7|     6220|
 
 ### hash_table 
 ```cpp
