@@ -26,7 +26,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * pop_heap(100%)
     * make_heap(100%)
     * sort_heap(100%)
-    * sort(30%) 
+    * sort(100%) 
 
 
 ## LightSTL单元测试（语句覆盖）
@@ -44,6 +44,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * copy(100%)
     * copy_backward(100%) 
     * sort_heap(100%)
+    * sort(100%)
 
 
 ## LightSTL性能测试
@@ -71,6 +72,7 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 |std::vector\<double\>     |      10^5|        2|
 |std::vector\<double\>     |      10^6|        9|
 |std::vector\<double\>     |      10^7|       73|
+
 
 (2)vector \<string\>
 ```cpp
@@ -116,6 +118,7 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 |std::list\<double\>     |      10^6|       11|
 |std::list\<double\>     |      10^7|       86|
 
+
 (2)list \<string\>
 ```cpp
 //std::list<std::string> lt   LightSTL::list<std::string> lt 
@@ -136,6 +139,7 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 |std::list\<std::string\>     |      10^5|       11|
 |std::list\<std::string\>     |      10^6|       91|
 |std::list\<std::string\>     |      10^7|      924|
+
 
 (3)list.sort()
 ```cpp
@@ -169,6 +173,7 @@ printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
 |std::list\<int\>     |      10^6|      372|
 |std::list\<int\>     |      10^7|     6220|
 
+
 ### priority_queue
 (1)priority_queue\<int\>
 ```cpp
@@ -190,6 +195,68 @@ printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
 |std::priority_queue\<int\>     |      10^5|        8|
 |std::priority_queue\<int\>     |      10^6|       54|
 |std::priority_queue\<int\>     |      10^7|      625| 
+
+
+### sort
+(1)sort(RandomAccessIterator,RandomAccessIterator)
+```cpp
+std::vector<int> vec1;
+LightSTL::vector<int> vec2;
+srand(time(0));
+for(int i = 0;i < TestSize;i++){
+    int tmp = rand();
+    vec1.push_back(tmp);
+    vec2.push_back(tmp);
+}
+clock_t t1 = clock();
+std::sort(vec1.begin(),vec1.end());
+clock_t t2 = clock();
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+
+clock_t t3 = clock();
+LightSTL::sort(vec2.begin(),vec2.end());
+clock_t t4 = clock();
+printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
+```
+|Container              | TestSize |Time (ms)|
+|-----------------------|---------:|--------:|
+|LightSTL::vector\<int\>|      10^5|        7|
+|LightSTL::vector\<int\>|      10^6|       76|
+|LightSTL::vector\<int\>|      10^7|      877|
+|std::vector\<int\>     |      10^5|        7|
+|std::vector\<int\>     |      10^6|       73|
+|std::vector\<int\>     |      10^7|      867|
+
+
+(2)sort(RandomAccessIterator,RandomAccessIterator,Compare)
+```cpp
+// bool cmp(int x,int y) { return x > y; }
+std::vector<int> vec1;
+LightSTL::vector<int> vec2;
+srand(time(0));
+for(int i = 0;i < TestSize;i++){
+    int tmp = rand();
+    vec1.push_back(tmp);
+    vec2.push_back(tmp);
+}
+clock_t t1 = clock();
+std::sort(vec1.begin(),vec1.end(),cmp);
+clock_t t2 = clock();
+printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+
+clock_t t3 = clock();
+LightSTL::sort(vec2.begin(),vec2.end(),cmp);
+clock_t t4 = clock();
+printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
+```
+|Container              | TestSize |Time (ms)|
+|-----------------------|---------:|--------:|
+|LightSTL::vector\<int\>|      10^5|        9|
+|LightSTL::vector\<int\>|      10^6|      104|
+|LightSTL::vector\<int\>|      10^7|     1167|
+|std::vector\<int\>     |      10^5|       13|
+|std::vector\<int\>     |      10^6|      114|
+|std::vector\<int\>     |      10^7|     1258|
 
 
 ### hash_table 
