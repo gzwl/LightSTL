@@ -4,7 +4,7 @@
 namespace LightSTL{
 
 void SortHeapTest();
-
+void SortTest();
 
 void AlgorithmTestAll();
 

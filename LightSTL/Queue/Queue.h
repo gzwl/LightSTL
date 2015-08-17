@@ -87,7 +87,9 @@ private:
     /*************************构造，析构**************************/
 public:
     priority_queue(const Compare& ccmp):c(),cmp(ccmp){}
-    priority_queue(const Container& cc = Container(),const Compare& ccmp = Compare()):c(cc),cmp(ccmp){}
+    priority_queue(const Container& cc = Container(),const Compare& ccmp = Compare()):c(cc),cmp(ccmp){
+        LightSTL::make_heap(c.begin(),c.end(),cmp);
+    }
     priority_queue(const priority_queue& rhs):c(rhs.c),cmp(rhs.cmp){}
 
     /*************************访问****************************/
