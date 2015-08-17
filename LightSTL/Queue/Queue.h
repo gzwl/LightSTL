@@ -109,10 +109,10 @@ public:
 public:
     void push(const T& val){
         c.push_back(val);
-        LightSTL::push_heap(c.begin(),c.end());
+        LightSTL::push_heap(c.begin(),c.end(),cmp);
     }
     void pop(){
-        LightSTL::pop_heap(c.begin(),c.end());
+        LightSTL::pop_heap(c.begin(),c.end(),cmp);
         c.pop_back();
     }
 

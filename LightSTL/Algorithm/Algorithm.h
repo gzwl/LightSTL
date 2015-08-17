@@ -292,6 +292,27 @@ void insert_sort(RandomAccessIterator first,RandomAccessIterator last)
     }
 }
 
+template<class RandomAccessIterator,class Compare>
+void insert_sort(RandomAccessIterator first,RandomAccessIterator last,Compare cmp)
+{
+    if(first == last)  return ;
+    typedef typename iterator_traits<RandomAccessIterator>::value_type T;
+    for(RandomAccessIterator i = first + 1;i < last;++i){
+        T val = *i;
+        if(cmp(val , *first)){
+            copy_backward(first,i,i + 1);
+            *first = val;
+        }
+        else{
+            RandomAccessIterator j = i;
+            while(cmp(val , *(j - 1))){
+                *j = *(j - 1);
+                --j;
+            }
+            *j = val;
+        }
+    }
+}
 //堆排序
 template<class RandomAccessIterator>
 void push_heap(RandomAccessIterator first,RandomAccessIterator last)
@@ -302,6 +323,23 @@ void push_heap(RandomAccessIterator first,RandomAccessIterator last)
     while(son){
         size_t par = (son - 1)/2;
         if(*(first + par) < val) {
+            *(first + son) = *(first + par);
+            son = par;
+        }
+        else    break;
+    }
+    *(first + son) = val;
+}
+
+template<class RandomAccessIterator,class Compare>
+void push_heap(RandomAccessIterator first,RandomAccessIterator last,Compare cmp)
+{
+    typedef typename iterator_traits<RandomAccessIterator>::value_type T;
+    size_t son = last - first - 1;
+    const T val = *(first + son);
+    while(son){
+        size_t par = (son - 1)/2;
+        if(cmp(*(first + par) , val)) {
             *(first + son) = *(first + par);
             son = par;
         }
@@ -335,12 +373,45 @@ void pop_heap(RandomAccessIterator first,RandomAccessIterator last)
 
 }
 
+template<class RandomAccessIterator,class Compare>
+void pop_heap(RandomAccessIterator first,RandomAccessIterator last,Compare cmp)
+{
+    LightSTL::swap(*first,*(last - 1));
+    size_t max_range = last - first - 1;
+    size_t self = 0;
+    while(self < max_range){
+        size_t next_pos = self;
+        size_t son = 2 * self + 1;
+        if(son < max_range && cmp(*(first + next_pos) , *(first + son))){
+            next_pos = son;
+        }
+        son = 2 * self + 2;
+        if(son < max_range && cmp(*(first + next_pos) , *(first + son))){
+            next_pos = son;
+        }
+        if(next_pos != self){
+            LightSTL::swap(*(first + self),*(first + next_pos));
+            self = next_pos;
+        }
+        else   return ;
+    }
+
+}
+
 template<class RandomAccessIterator>
 void make_heap(RandomAccessIterator first,RandomAccessIterator last)
 {
     size_t len = last - first;
     if(len == 0 || len == 1)    return ;
     for(size_t i = 2;i <= len;i++)  LightSTL::push_heap(first,first + i);
+}
+
+template<class RandomAccessIterator,class Compare>
+void make_heap(RandomAccessIterator first,RandomAccessIterator last,Compare cmp)
+{
+    size_t len = last - first;
+    if(len == 0 || len == 1)    return ;
+    for(size_t i = 2;i <= len;i++)  LightSTL::push_heap(first,first + i,cmp);
 }
 
 template<class RandomAccessIterator>
@@ -354,6 +425,16 @@ void sort_heap(RandomAccessIterator first,RandomAccessIterator last)
     }
 }
 
+template<class RandomAccessIterator,class Compare>
+void sort_heap(RandomAccessIterator first,RandomAccessIterator last,Compare cmp)
+{
+    LightSTL::make_heap(first,last,cmp);
+    size_t n = last - first;
+    while(n > 1){
+        LightSTL::pop_heap(first,first + n,cmp);
+        --n;
+    }
+}
 
 }
 #endif
