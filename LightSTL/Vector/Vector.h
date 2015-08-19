@@ -1,28 +1,108 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include<cstdlib>
+#include<cstddef>   //std::size_t
+#include<initializer_list>
 #include "../Traits/Traits.h"
 #include "../Allocator/Allocator.h"
 #include "../Allocator/Alloc.h"
 
 namespace LightSTL{
 
-//vector前置声明，swap参数所用
-template<class T,class Alloc>
-class vector;
+/*************************vector反向迭代器**************************/
+template<class T>
+class vector_rev_iterator
+{
+public:
+    typedef T value_type;
+    typedef random_access_iterator iterator_type;
 
-//swap前置声明，在vector中特例化友元函数
-template<class T,class Alloc>
-void swap(vector<T,Alloc> &lhs,vector<T,Alloc> &rhs);
+private:
+    typedef vector_rev_iterator<T> self;
+    T* node;
+
+public:
+
+    vector_rev_iterator():node(0){}
+    vector_rev_iterator(T* rhs):node(rhs){}
+    vector_rev_iterator(const self& rhs):node(rhs.node){}
+
+    self& operator=(T* rhs){
+        node = rhs;
+        return *this;
+    }
+    self& operator=(const self& rhs){
+        node = rhs.node;
+        return *this;
+    }
+
+    T& operator*(){ return *node;}
+    const T& operator*() const {    return *node;}
+    T* operator->(){    return node;}
+    T const* operator->()const {  return node;}
+
+    //迭代器移动
+    ssize_t operator-(const self& rhs) const{
+        return rhs.node - node;
+    }
+    self operator-(ssize_t num) const{
+        return node + num;
+    }
+    self operator+(ssize_t num) const{
+        return node - num;
+    }
+
+    self& operator++(){
+        --node;
+        return *this;
+    }
+    self operator++(int){
+        self tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+    self& operator--(){
+        ++node;
+        return *this;
+    }
+    self operator--(int){
+        self tmp = *this;
+        --(*this);
+        return *this;
+    }
+
+    //关系运算
+    bool operator<(const self& rhs) const{
+        return rhs.node < node;
+    }
+    bool operator>(const self& rhs) const{
+        return rhs.node > node;
+    }
+    bool operator<=(const self& rhs) const{
+        return rhs.node <= node;
+    }
+    bool operator>=(const self& rhs) const{
+        return rhs.node >= node;
+    }
+    bool operator==(const self& rhs) const{
+        return node == rhs.node;
+    }
+    bool operator!=(const self& rhs) const{
+        return node != rhs.node;
+    }
+
+};
+
 
 template<class T,class Alloc = LightSTL::alloc >
 class vector
 {
 public:
 	typedef T* iterator;
-	typedef T* pointer;
 	typedef const T* const_iterator;
+	typedef vector_rev_iterator<T> reverse_iterator;
+	typedef vector_rev_iterator<const T> const_reverse_iterator;
+	typedef T* pointer;
 	typedef T& reference;
 	typedef const T& const_reference;
 	typedef allocator<T,Alloc> data_allocator;
@@ -31,20 +111,29 @@ private:
 	T* finish;
 	T* end_of_storage;
 
-	/*************************构造，析构**************************/
+	/*************************构造，析构,赋值**************************/
 public:
 	vector():start(0),finish(0),end_of_storage(0){}
 	vector(const size_t n,const T& val);
 	vector(const vector& rhs);
+	vector(vector&& rhs);
+	vector(const std::initializer_list<T>& rhs);
 	explicit vector(const size_t n);
 	~vector();
+    vector& operator=(const vector& rhs) ;
+    vector& operator=(vector&& rhs);
 
 	/*************************迭代器相关**************************/
 public:
 	iterator begin(){	return start;}
 	const_iterator cbegin() const {     return start;}
+	reverse_iterator rbegin(){  return finish - 1;}
+	const_reverse_iterator crbegin()const { return finish - 1;}
 	iterator end(){	return finish;}
 	const_iterator cend() const { return finish;}
+	reverse_iterator rend(){    return start - 1;}
+	const_reverse_iterator crend() const { return start - 1;}
+
 
 	/*************************容量相关****************************/
 public:
@@ -101,7 +190,6 @@ public:
 	friend bool operator==(const vector<U,Alloc_>& lhs,const vector<U,Alloc_>& rhs) ;
 	template<class U,class Alloc_>
 	friend bool operator!=(const vector<U,Alloc_>& lhs,const vector<U,Alloc_>& rhs) ;
-	vector& operator=(const vector& rhs) ;
 	template<class U,class Alloc_>
 	friend void swap(vector<U,Alloc_>& lhs,vector<U,Alloc_>& rhs);
 

@@ -7,8 +7,7 @@
 namespace LightSTL{
 
 
-
-/*************************构造，析构**************************/
+/*************************构造，析构，赋值**************************/
 template<class T,class Alloc>
 vector<T,Alloc>::vector(const size_t n,const T& val)
 {
@@ -32,10 +31,53 @@ vector<T,Alloc>::vector(const vector& rhs)
 }
 
 template<class T,class Alloc>
+vector<T,Alloc>::vector(vector && rhs):start(rhs.start),finish(rhs.finish),end_of_storage(rhs.end_of_storage)
+{
+    rhs.start = rhs.finish = rhs.end_of_storage = 0;
+}
+
+template<class T,class Alloc>
+vector<T,Alloc>::vector(const std::initializer_list<T>& rhs)
+{
+    size_t n = rhs.size();
+    start = allocate(n);
+    finish = start + n;
+    end_of_storage = start + n;
+    LightSTL::uninitialized_copy(rhs.begin(),rhs.end(),start);
+}
+
+template<class T,class Alloc>
 vector<T,Alloc>::~vector()
 {
     destroy(begin(),end());
 	deallocate();
+}
+
+template<class T,class Alloc>
+vector<T,Alloc>& vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
+{
+    //赋值的右值为本身
+    if(start == rhs.start)  return *this;
+    destroy(start,finish);
+    if(size() >= rhs.size()){
+        finish = uninitialized_copy(rhs.start,rhs.finish,start);
+    }
+    else{
+        destroy(begin(),end());
+        deallocate();
+        start = allocate(rhs.size());
+        finish = uninitialized_copy(rhs.start,rhs.finish,start);
+        end_of_storage = finish;
+    }
+    return *this;
+}
+
+template<class T,class Alloc>
+vector<T,Alloc>& vector<T,Alloc>::operator=(vector<T,Alloc>&& rhs)
+{
+    if(start == rhs.start)  return *this;
+    swap(*this,rhs);
+    return *this;
 }
 
 /*************************添加元素****************************/
@@ -265,24 +307,6 @@ bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
     return !operator==(lhs,rhs);
 }
 
-template<class T,class Alloc>
-vector<T,Alloc>& vector<T,Alloc>::operator=(const vector<T,Alloc>& rhs)
-{
-    //赋值的右值为本身
-    if(start == rhs.start)  return *this;
-    destroy(start,finish);
-    if(size() >= rhs.size()){
-        finish = uninitialized_copy(rhs.start,rhs.finish,start);
-    }
-    else{
-        destroy(begin(),end());
-        deallocate();
-        start = allocate(rhs.size());
-        finish = uninitialized_copy(rhs.start,rhs.finish,start);
-        end_of_storage = finish;
-    }
-    return *this;
-}
 
 template<class T,class Alloc>
 void swap(vector<T,Alloc> &lhs,vector<T,Alloc> &rhs)
