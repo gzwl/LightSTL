@@ -1,6 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <initializer_list>
 #include "../Traits/Traits.h"
 #include "../Allocator/Allocator.h"
 #include "../Allocator/Construct.h"
@@ -74,12 +75,70 @@ struct list_iterator
 
 };
 
+//list反向迭代器
+template<class T>
+struct list_rev_iterator
+{
+    typedef bidirection_iterator iterator_type;
+    typedef T value_type;
+
+    list_node<T>* node;
+
+    //构造函数
+    list_rev_iterator(){}
+    list_rev_iterator(list_node<T> *ptr):node(ptr){}
+    list_rev_iterator(const list_rev_iterator &rhs):node(rhs.node){}
+
+    //关系赋值运算符
+    list_rev_iterator& operator=(const list_rev_iterator &rhs){
+        node = rhs.node;
+        return *this;
+    }
+    bool operator==(const list_rev_iterator &rhs)const {
+        return node == rhs.node;
+    }
+    bool operator!=(const list_rev_iterator &rhs)const {
+        return node != rhs.node;
+    }
+
+    //自增自减运算符
+    list_rev_iterator& operator++() {
+        node = node->prev;
+        return *this;
+    }
+    list_rev_iterator operator++(int) {
+        list_rev_iterator tmp = *this;
+        ++*this;
+        return tmp;
+    }
+    list_rev_iterator& operator--(){
+        node = node->next;
+        return *this;
+    }
+    list_rev_iterator operator--(int){
+        list_rev_iterator tmp = *this;
+        --*this;
+        return tmp;
+    }
+
+
+    value_type& operator*(){
+        return node->data;
+    }
+    value_type* operator->(){
+        return &(node->data);
+    }
+
+};
+
 template<class T,class Alloc = LightSTL::alloc>
 class list
 {
 public:
     typedef list_iterator<T> iterator;
     typedef list_iterator<const T> const_iterator;
+    typedef list_rev_iterator<T> reverse_iterator;
+    typedef list_rev_iterator<const T> const_reverse_iterator;
     typedef T& reference;
     typedef const T& const_reference;
     typedef list_node<T>* pointer;
@@ -92,8 +151,12 @@ private:
 public:
 	list();
 	list(const list&);
+	list(list&&);
 	list(size_t n,const T& val);
+	list(const std::initializer_list<T>& rhs);
 	~list();
+    list& operator=(const list& rhs) ;
+    list& operator=(list&& rhs);
 
 	/*************************迭代器相关**************************/
 public:
@@ -101,6 +164,10 @@ public:
 	iterator end(){	return node;}
 	const_iterator cbegin() const{    return (const_pointer)(node->next);}
 	const_iterator cend() const {  return (const_pointer)(node);}
+	reverse_iterator rbegin(){	return node->prev;}
+	reverse_iterator rend(){	return node;}
+	const_reverse_iterator crbegin() const{    return (const_pointer)(node->prev);}
+	const_reverse_iterator crend() const {  return (const_pointer)(node);}
 
 	/*************************容量相关****************************/
 public:
@@ -162,7 +229,6 @@ public:
 	friend bool operator==(const list<U,Alloc_>& lhs,const list<U,Alloc_>& rhs) ;
 	template<class U,class Alloc_>
 	friend bool operator!=(const list<U,Alloc_>& lhs,const list<U,Alloc_>& rhs) ;
-	list& operator=(const list& rhs) ;
 	template<class U,class Alloc_>
 	friend void swap(list<U,Alloc_>& lhs,list<U,Alloc_>& rhs);
 
@@ -180,7 +246,7 @@ public:
     /*************************内存管理****************************/
 private:
     pointer get_node(){ return data_allocator::allocate(); }
-    void put_node(pointer ptr){     return data_allocator::deallocate(ptr);}
+    void put_node(pointer ptr){     if(ptr) data_allocator::deallocate(ptr);}
     pointer create_node(const T& val)
     {
         pointer ptr = get_node();
@@ -189,6 +255,7 @@ private:
     }
     void destroy_node(pointer ptr)
     {
+        if(ptr == NULL) return ;
         destroy(&ptr->data);
         put_node(ptr);
     }

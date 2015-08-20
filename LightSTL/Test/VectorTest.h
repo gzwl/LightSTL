@@ -3,6 +3,7 @@
 
 namespace LightSTL{
 
+namespace Test{
 
 void VectorTest1();
 void VectorTest2();
@@ -15,6 +16,7 @@ void VectorTest7();
 
 void VectorTestAll();
 
+}
 
 }
 

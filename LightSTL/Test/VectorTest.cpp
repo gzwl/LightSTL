@@ -9,6 +9,8 @@
 
 namespace LightSTL{
 
+namespace Test{
+
 void VectorTest1()
 {
     LightSTL::vector<int> vec1;
@@ -154,6 +156,8 @@ void VectorTestAll()
     VectorTest6();
     VectorTest7();
     std::cout << "Vector pass the test!"  << std::endl;
+
+}
 
 }
 

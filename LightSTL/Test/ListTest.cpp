@@ -7,7 +7,9 @@
 
 namespace LightSTL{
 
-//添加元素部分测试
+
+namespace Test{
+
 void ListTest1()
 {
     LightSTL::list<int> lt1;
@@ -240,6 +242,23 @@ void ListTest8()
     }
 }
 
+void ListTest9()
+{
+    std::list<int> lt1 = {1,2,3,4,5,6,7,8,9,10};
+    LightSTL::list<int> lt2 = {1,2,3,4,5,6,7,8,9,10};
+    LightSTL::list<int> lt3(LightSTL::list<int>{1,2,3,4,5,6,7,8,9,10});
+    assert(lt1.size() == lt2.size());
+    auto ite1 = lt1.crbegin();
+    auto ite2 = lt2.crbegin();
+    while(ite1 != lt1.crend() && ite2 != lt2.crend()){
+        assert(*ite1++ == *ite2++);
+        ite1++;
+        ite2++;
+    }
+    assert(LightSTL::equal(lt1.rbegin(),lt1.rend(),lt2.rbegin()));
+    assert(LightSTL::equal(lt3.rbegin(),lt3.rend(),lt2.rbegin()));
+}
+
 void ListTestAll()
 {
 
@@ -251,9 +270,11 @@ void ListTestAll()
     ListTest6();
     ListTest7();
     ListTest8();
+    ListTest9();
     std::cout << "List pass the test!"  << std::endl;
 
 }
 
+}
 
 }

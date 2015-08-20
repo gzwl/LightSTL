@@ -23,6 +23,15 @@ list<T,Alloc>::list(const list<T,Alloc>& rhs)
 }
 
 template<class T,class Alloc>
+list<T,Alloc>::list(list<T,Alloc>&& rhs)
+{
+    node = get_node();
+    node->prev = node;
+    node->next = node;
+    LightSTL::swap(*this,rhs);
+}
+
+template<class T,class Alloc>
 list<T,Alloc>::list(size_t n,const T& val)
 {
     node = get_node();
@@ -32,7 +41,32 @@ list<T,Alloc>::list(size_t n,const T& val)
 }
 
 template<class T,class Alloc>
+list<T,Alloc>::list(const std::initializer_list<T>& rhs)
+{
+    node = get_node();
+    node->prev = node;
+    node->next = node;
+    insert(begin(),rhs.begin(),rhs.end());
+}
+
+template<class T,class Alloc>
 list<T,Alloc>::~list(){ clear();put_node(node);}
+
+template<class T,class Alloc>
+list<T,Alloc>& list<T,Alloc>::operator=(const list<T,Alloc>& rhs)
+{
+    if(node == rhs.node)    return *this;
+    clear();
+    insert(begin(),rhs.cbegin(),rhs.cend());
+    return *this;
+}
+
+template<class T,class Alloc>
+list<T,Alloc>& list<T,Alloc>::operator=(list<T,Alloc>&& rhs)
+{
+    LightSTL::swap(*this,rhs);
+    return *this;
+}
 
 /*************************添加元素****************************/
 template<class T,class Alloc>
@@ -263,13 +297,6 @@ bool operator!=(const list<T,Alloc>& lhs,const list<T,Alloc>& rhs)
     return !operator==(lhs,rhs);
 }
 
-template<class T,class Alloc>
-list<T,Alloc>& list<T,Alloc>::operator=(const list<T,Alloc>& rhs)
-{
-    clear();
-    insert(begin(),rhs.cbegin(),rhs.cend());
-    return *this;
-}
 
 template<class T,class Alloc>
 void swap(list<T,Alloc>& lhs,list<T,Alloc>& rhs)
