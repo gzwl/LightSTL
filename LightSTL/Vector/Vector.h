@@ -6,92 +6,9 @@
 #include "../Traits/Traits.h"
 #include "../Allocator/Allocator.h"
 #include "../Allocator/Alloc.h"
+#include "../ReverseIterator/ReverseIterator.h"
 
 namespace LightSTL{
-
-/*************************vector反向迭代器**************************/
-template<class T>
-class vector_rev_iterator
-{
-public:
-    typedef T value_type;
-    typedef random_access_iterator iterator_type;
-
-private:
-    typedef vector_rev_iterator<T> self;
-    T* node;
-
-public:
-
-    vector_rev_iterator():node(0){}
-    vector_rev_iterator(T* rhs):node(rhs){}
-    vector_rev_iterator(const self& rhs):node(rhs.node){}
-
-    self& operator=(T* rhs){
-        node = rhs;
-        return *this;
-    }
-    self& operator=(const self& rhs){
-        node = rhs.node;
-        return *this;
-    }
-
-    T& operator*(){ return *node;}
-    const T& operator*() const {    return *node;}
-    T* operator->(){    return node;}
-    T const* operator->()const {  return node;}
-
-    //迭代器移动
-    ssize_t operator-(const self& rhs) const{
-        return rhs.node - node;
-    }
-    self operator-(ssize_t num) const{
-        return node + num;
-    }
-    self operator+(ssize_t num) const{
-        return node - num;
-    }
-
-    self& operator++(){
-        --node;
-        return *this;
-    }
-    self operator++(int){
-        self tmp = *this;
-        ++(*this);
-        return tmp;
-    }
-    self& operator--(){
-        ++node;
-        return *this;
-    }
-    self operator--(int){
-        self tmp = *this;
-        --(*this);
-        return *this;
-    }
-
-    //关系运算
-    bool operator<(const self& rhs) const{
-        return rhs.node < node;
-    }
-    bool operator>(const self& rhs) const{
-        return rhs.node > node;
-    }
-    bool operator<=(const self& rhs) const{
-        return rhs.node <= node;
-    }
-    bool operator>=(const self& rhs) const{
-        return rhs.node >= node;
-    }
-    bool operator==(const self& rhs) const{
-        return node == rhs.node;
-    }
-    bool operator!=(const self& rhs) const{
-        return node != rhs.node;
-    }
-
-};
 
 
 template<class T,class Alloc = LightSTL::alloc >
@@ -100,8 +17,8 @@ class vector
 public:
 	typedef T* iterator;
 	typedef const T* const_iterator;
-	typedef vector_rev_iterator<T> reverse_iterator;
-	typedef vector_rev_iterator<const T> const_reverse_iterator;
+	typedef LightSTL::reverse_iterator<T> reverse_iterator;
+	typedef LightSTL::reverse_iterator<const T> const_reverse_iterator;
 	typedef T* pointer;
 	typedef T& reference;
 	typedef const T& const_reference;
@@ -120,8 +37,8 @@ public:
 	vector(const std::initializer_list<T>& rhs);
 	explicit vector(const size_t n);
 	~vector();
-    	vector& operator=(const vector& rhs) ;
-    	vector& operator=(vector&& rhs);
+    vector& operator=(const vector& rhs) ;
+    vector& operator=(vector&& rhs);
 
 	/*************************迭代器相关**************************/
 public:
@@ -161,16 +78,16 @@ public:
 	void resize(size_t n,const T& val = T());
 
 private:
-    	//判断InputIterator是否为整数
-    	template<class InputIterator>
-    	iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,true_type);
-    	template<class InputIterator>
-    	iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,false_type);
+    //判断InputIterator是否为整数
+    template<class InputIterator>
+    iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,true_type);
+    template<class InputIterator>
+    iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,false_type);
 
 	//被insert(iterator,size_t,const T&)和insert_integer(iterator,InputIterator,InputIterator,true_type)调用
-    	iterator insert_n(iterator pos,size_t n,const T& val);
+    iterator insert_n(iterator pos,size_t n,const T& val);
 
-    	//被insert_integer(iterator,InputIterator,InputIterator,false_type)调用
+    //被insert_integer(iterator,InputIterator,InputIterator,false_type)调用
 	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,random_access_iterator);
 	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,forward_iterator);
 
