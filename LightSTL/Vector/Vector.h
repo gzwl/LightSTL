@@ -120,18 +120,18 @@ public:
 	vector(const std::initializer_list<T>& rhs);
 	explicit vector(const size_t n);
 	~vector();
-    vector& operator=(const vector& rhs) ;
-    vector& operator=(vector&& rhs);
+    	vector& operator=(const vector& rhs) ;
+    	vector& operator=(vector&& rhs);
 
 	/*************************迭代器相关**************************/
 public:
 	iterator begin(){	return start;}
-	const_iterator cbegin() const {     return start;}
-	reverse_iterator rbegin(){  return finish - 1;}
-	const_reverse_iterator crbegin()const { return finish - 1;}
 	iterator end(){	return finish;}
+	const_iterator cbegin() const {     return start;}
 	const_iterator cend() const { return finish;}
+	reverse_iterator rbegin(){  return finish - 1;}
 	reverse_iterator rend(){    return start - 1;}
+	const_reverse_iterator crbegin()const { return finish - 1;}
 	const_reverse_iterator crend() const { return start - 1;}
 
 
@@ -161,16 +161,16 @@ public:
 	void resize(size_t n,const T& val = T());
 
 private:
-    //判断InputIterator是否为整数
-    template<class InputIterator>
-    iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,true_type);
-    template<class InputIterator>
-    iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,false_type);
+    	//判断InputIterator是否为整数
+    	template<class InputIterator>
+    	iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,true_type);
+    	template<class InputIterator>
+    	iterator insert_integer(iterator pos,InputIterator lhs,InputIterator rhs,false_type);
 
-    //被insert(iterator,size_t,const T&)和insert_integer(iterator,InputIterator,InputIterator,true_type)调用
-    iterator insert_n(iterator pos,size_t n,const T& val);
+	//被insert(iterator,size_t,const T&)和insert_integer(iterator,InputIterator,InputIterator,true_type)调用
+    	iterator insert_n(iterator pos,size_t n,const T& val);
 
-    //被insert_integer(iterator,InputIterator,InputIterator,false_type)调用
+    	//被insert_integer(iterator,InputIterator,InputIterator,false_type)调用
 	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,random_access_iterator);
 	template<class InputIterator> iterator insert_aux(iterator pos,InputIterator lhs,InputIterator rhs,forward_iterator);
 
