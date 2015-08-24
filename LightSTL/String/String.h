@@ -41,6 +41,7 @@ public:
     string(const char*);
     string(const string& rhs);
     string(string&& rhs);
+    string(const_iterator first,const_iterator last);
     string(const std::initializer_list<char>& rhs);
     ~string();
     string& operator=(const string& rhs);
@@ -52,6 +53,10 @@ public:
 	{	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
 	iterator end()
 	{	return finish;}
+	const_iterator begin() const
+	{	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
+	const_iterator end() const
+	{	return finish;}
 	const_iterator cbegin() const
 	{	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
 	const_iterator cend() const
@@ -59,6 +64,10 @@ public:
 	reverse_iterator rbegin()
 	{  return finish - 1;}
 	reverse_iterator rend()
+	{	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
+	const_reverse_iterator rbegin() const
+	{  return finish - 1;}
+	const_reverse_iterator rend() const
 	{	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
 	const_reverse_iterator crbegin() const
 	{ return finish - 1;}
@@ -76,12 +85,39 @@ public:
 public:
 	reference operator[](size_t n);
 	const_reference operator[](size_t n) const;
+	string substr(size_t pos = 0) const;
+	string substr(size_t pos ,size_t len) const;
+
+	size_t find(const char c,size_t pos = 0) const;
+    size_t find(const char *s,size_t pos = 0) const;
+    size_t find(const char *s,size_t pos,size_t n) const;
+    size_t find(const string& s,size_t pos = 0) const;
+
+	size_t rfind(const char c,size_t pos = 0) const;
+    size_t rfind(const char *s,size_t pos = 0) const;
+    size_t rfind(const char *s,size_t pos,size_t n) const;
+    size_t rfind(const string& s,size_t pos = 0) const;
+
+private:
+    size_t find_aux(const_iterator start,const_iterator first,const_iterator last) const;
+    size_t rfind_aux(const_reverse_iterator start,const_iterator first,const_iterator last) const;
 
 	/*************************添加元素****************************/
 public:
 	iterator insert(iterator pos,const char val);
 	iterator insert(iterator pos,size_t n,const char val);
 	iterator insert(iterator pos,const_iterator lhs,const_iterator rhs);
+
+	string& operator+=(const char val);
+	string& operator+=(const char* str);
+	string& operator+=(const string& rhs);
+
+    friend string operator+(const string& s,const char val);
+    friend string operator+(const char val,const string& s);
+    friend string operator+(const string& s,const char* str);
+    friend string operator+(const char* str,const string& s);
+    friend string operator+(const string& lhs,const string& rhs);
+
 	void resize(size_t n,const char val);
 
 	/*************************删除元素****************************/
@@ -89,6 +125,19 @@ public:
 	void clear();
 	iterator erase(iterator pos);
 	iterator erase(iterator start,iterator finish);
+
+	/*************************替换元素****************************/
+public:
+    string& replace(size_t pos,size_t nsize,const char *s);
+    string& replace(size_t pos,size_t nsize,const char *s, int n);
+    string& replace(size_t pos,size_t nsize,const string &s);
+    string& replace(size_t pos,size_t nsize,const string &s,size_t newpos,size_t newnsize);
+    string& replace(size_t pos,size_t nsize,size_t n,const char c);
+    string& replace(iterator first,iterator last,const char *s);
+    string& replace(iterator first,iterator last,const char *s,size_t n);
+    string& replace(iterator first,iterator last,const string &s);
+    string& replace(iterator first,iterator last,size_t n,const char c);
+    string& replace(iterator first,iterator last,const_iterator newfirst,const_iterator newlast);
 
 	/*************************关系运算****************************/
 public:
