@@ -58,6 +58,31 @@ InputIterator fill_n(InputIterator start,size_t n,const T& val)
 	return start;
 }
 
+/**********max,min函数**********/
+template<class T>
+const T& max(const T& lhs,const T& rhs)
+{
+    return rhs < lhs ? lhs : rhs;
+}
+
+template<class T,class Compare>
+const T& max(const T& lhs,const T& rhs,Compare cmp)
+{
+    return cmp(rhs,lhs) ? lhs : rhs;
+}
+
+template<class T>
+const T& min(const T& lhs,const T& rhs)
+{
+    return lhs < rhs ? lhs : rhs;
+}
+
+template<class T,class Compare>
+const T& min(const T& lhs,const T& rhs,Compare cmp)
+{
+    return cmp(lhs,rhs) ? lhs : rhs;
+}
+
 /**********copy函数**********/
 
 //分支2,value_type有trivial_assignment
@@ -194,6 +219,29 @@ T* copy_backward(const T* start,const T* finish,T* des)
 
 
 /**********equal函数**********/
+
+template<class T>
+static bool equal_aux(T* start1,T* finish1,T* start2,true_type)
+{
+    return memcmp(start1,start2,finish1 - start1) == 0;
+}
+
+template<class T>
+static bool equal_aux(T* start1,T* finish1,T* start2,false_type)
+{
+    while(start1 != finish1){
+        if(*start1++ != *start2++)  return false;
+    }
+    return true;
+}
+
+template<class T>
+bool equal(T* start1,T* finish1,T* start2)
+{
+    typedef typename type_traits<T>::is_POD_type is_POD;
+    return equal_aux(start1,finish1,start2,is_POD());
+}
+
 template<class InputIterator1,class InputIterator2>
 bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2)
 {
@@ -207,7 +255,7 @@ template<class InputIterator1,class InputIterator2,class Compare>
 bool equal(InputIterator1 start1,InputIterator1 finish1,InputIterator2 start2,Compare eq)
 {
     while(start1 != finish1){
-        if(eq(*start1++,*start2++))  return false;
+        if(!eq(*start1++,*start2++))  return false;
     }
     return true;
 }

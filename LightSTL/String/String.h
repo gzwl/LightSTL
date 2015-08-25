@@ -23,27 +23,32 @@ public:
     typedef char& reference;
     typedef const char& const_reference;
     typedef allocator<char,LightSTL::alloc> data_allocator;
+    static const size_t npos = -1;
 
 private:
     char* finish;
     char* end_of_storage;
-    const static int LOCALSIZE = 16;
+    const static int LOCALSIZE = 15;
     union
     {
-        char str[LOCALSIZE];
+        char str[LOCALSIZE + 1];
         char* start;
     }data;
 
     /*************************构造，析构,赋值**************************/
 public:
-    string():finish(data.str),end_of_storage(data.str + LOCALSIZE){}
+    string():finish(data.str),end_of_storage(data.str + LOCALSIZE)
+    {memset(data.str,0,sizeof(data.str));}
     string(size_t n,const char);
     string(const char*);
-    string(const string& rhs);
+    string(const char*,size_t nsize);
+    string(const string& rhs,size_t pos = 0);
+    string(const string& rhs,size_t pos,size_t nsize);
     string(string&& rhs);
     string(const_iterator first,const_iterator last);
     string(const std::initializer_list<char>& rhs);
     ~string();
+    string& operator=(const char* s);
     string& operator=(const string& rhs);
     string& operator=(string&& rhs);
 
@@ -78,11 +83,17 @@ public:
 public:
 	bool empty() const {	return cbegin() == cend();}
 	size_t size() const {	return cend() - cbegin();}
+	size_t length() const {	    return cend() - cbegin();}
 	size_t max_size() const {  return end_of_storage - cbegin();}
 	size_t capacity() const {	return end_of_storage - cbegin();}
 
 	/*************************访问元素****************************/
 public:
+    reference front() ;
+    const_reference front() const;
+    reference back() ;
+    const_reference back() const;
+
 	reference operator[](size_t n);
 	const_reference operator[](size_t n) const;
 	string substr(size_t pos = 0) const;
@@ -93,20 +104,48 @@ public:
     size_t find(const char *s,size_t pos,size_t n) const;
     size_t find(const string& s,size_t pos = 0) const;
 
-	size_t rfind(const char c,size_t pos = 0) const;
-    size_t rfind(const char *s,size_t pos = 0) const;
+	size_t rfind(const char c,size_t pos = npos) const;
+    size_t rfind(const char *s,size_t pos = npos) const;
     size_t rfind(const char *s,size_t pos,size_t n) const;
-    size_t rfind(const string& s,size_t pos = 0) const;
+    size_t rfind(const string& s,size_t pos = npos) const;
+
+    size_t find_first_of(const char c,size_t pos = 0) const;
+    size_t find_first_of(const char *s,size_t pos = 0) const;
+    size_t find_first_of(const char *s,size_t pos,size_t n) const;
+    size_t find_first_of(const string &s,size_t pos = 0) const;
+    size_t find_first_not_of(const char c,size_t pos = 0) const;
+    size_t find_first_not_of(const char *s,size_t pos = 0) const;
+    size_t find_first_not_of(const char *s,size_t pos,size_t n) const;
+    size_t find_first_not_of(const string &s,size_t pos = 0) const;
+
+    size_t find_last_of(const char c,size_t pos = npos) const;
+    size_t find_last_of(const char *s,size_t pos = npos) const;
+    size_t find_last_of(const char *s,size_t pos,size_t n) const;
+    size_t find_last_of(const string &s,size_t pos = npos) const;
+    size_t find_last_not_of(const char c,size_t pos = npos) const;
+    size_t find_last_not_of(const char *s,size_t pos = npos) const;
+    size_t find_last_not_of(const char *s,size_t pos,size_t n) const;
+    size_t find_last_not_of(const string &s,size_t pos = npos) const;
 
 private:
     size_t find_aux(const_iterator start,const_iterator first,const_iterator last) const;
-    size_t rfind_aux(const_reverse_iterator start,const_iterator first,const_iterator last) const;
+    size_t rfind_aux(const_iterator start,const_iterator first,const_iterator last) const;
+    size_t find_first_of_aux(const_iterator first0,const_iterator last0,const_iterator first1,const_iterator last1) const;
+    size_t find_first_not_of_aux(const_iterator first0,const_iterator last0,const_iterator first1,const_iterator last1) const;
+    size_t find_last_of_aux(const_reverse_iterator first0,const_reverse_iterator last0,const_iterator first1,const_iterator last1) const;
+    size_t find_last_not_of_aux(const_reverse_iterator first0,const_reverse_iterator last0,const_iterator first1,const_iterator last1) const;
 
 	/*************************添加元素****************************/
 public:
-	iterator insert(iterator pos,const char val);
-	iterator insert(iterator pos,size_t n,const char val);
-	iterator insert(iterator pos,const_iterator lhs,const_iterator rhs);
+    void push_back(const char c){   insert(end(),c);}
+    string& insert(size_t pos,size_t n,const char c);
+    string& insert(size_t pos,const char* s);
+    string& insert(size_t pos,const char* s,size_t n);
+    string& insert(size_t pos,const string& s);
+    string& insert(size_t pos,const string& s,size_t pos2,size_t n);
+	string& insert(iterator pos,const char val);
+	string& insert(iterator pos,size_t n,const char val);
+	string& insert(iterator pos,const_iterator lhs,const_iterator rhs);
 
 	string& operator+=(const char val);
 	string& operator+=(const char* str);
@@ -118,13 +157,22 @@ public:
     friend string operator+(const char* str,const string& s);
     friend string operator+(const string& lhs,const string& rhs);
 
-	void resize(size_t n,const char val);
+    string& append(const char *s);
+    string& append(const char *s,size_t n);
+    string& append(const string &s);
+    string& append(const string &s,size_t pos,size_t n);
+    string& append(size_t n,const char c);
+    string& append(const_iterator first,const_iterator last);
+
+	void resize(size_t n,const char val = '\0');
 
 	/*************************删除元素****************************/
 public:
-	void clear();
+    void pop_back() {   --finish;}
+    string& erase(size_t pos,size_t nsize);
 	iterator erase(iterator pos);
 	iterator erase(iterator start,iterator finish);
+	void clear();
 
 	/*************************替换元素****************************/
 public:
@@ -141,6 +189,13 @@ public:
 
 	/*************************关系运算****************************/
 public:
+    int compare(const string &s) const;
+    int compare(size_t pos,size_t n,const string &s)const;
+    int compare(size_t pos,size_t n,const string &s,size_t pos2,size_t n2)const;
+    int compare(const char *s) const;
+    int compare(size_t pos,size_t n,const char *s) const;
+    int compare(size_t pos,size_t n,const char *s,size_t pos2) const;
+
 	friend bool operator==(const string& lhs,const string& rhs);
     friend bool operator!=(const string& lhs,const string& rhs);
     friend bool operator>(const string& lhs,const string& rhs);
@@ -148,6 +203,7 @@ public:
     friend bool operator<(const string& lhs,const string& rhs);
     friend bool operator<=(const string& lhs,const string& rhs);
 
+    void swap(string& rhs);
     friend void swap(string& lhs,string& rhs);
 
     friend std::ostream& operator<<(std::ostream& os,const string& rhs);
