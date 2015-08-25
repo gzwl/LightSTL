@@ -16,7 +16,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * priority_queue(100%)
     * stack(100%)
     * pair(100%)
-    * string(30%)
+    * string(100%)
     * hash_table(100%)
     * hash_map(100%)
 * 算法库
@@ -39,7 +39,7 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
     * priority_queue(100%)
     * stack(100%)
     * pair(100%)
-    * string(20%)
+    * string(100%)
     * hash_table(100%)
     * hash_map(100%)
 * 算法库
@@ -262,9 +262,29 @@ printf("%lfms\n",(double)1000*(t4-t3)/CLOCKS_PER_SEC);
 |std::vector\<int\>     |      10^6|      114|
 |std::vector\<int\>     |      10^7|     1258|
 
+### string  
+```cpp
+//LightSTL::string s  std::string s
+    clock_t t1 = clock();
+    for(int i = 0;i < TestSize;i++){
+        s += "zwl love cpp";
+    }
+    clock_t t2 = clock();
+    printf("%lfms\n",(double)1000*(t2-t1)/CLOCKS_PER_SEC);
+``` 
+|Container       | TestSize |Time (ms)|
+|----------------|---------:|--------:|
+|LightSTL::string|      10^5|        3|
+|LightSTL::string|      10^6|       27|
+|LightSTL::string|      10^7|      225|
+|LightSTL::string|      10^8|     1874|
+|std::string     |      10^5|        4|
+|std::string     |      10^6|       22|
+|std::string     |      10^7|      217|
+|std::string     |      10^8|     1934|
 
 ### hash_table 
-```cpp
+```cpp  
 LightSTL::hash_table<int> htb;
 for(int i = 0;i < 2000000;i++){
       if(i == 7 || i == 46 || i == 9589)  continue;
@@ -278,3 +298,4 @@ for(int i = 0;i < 2000000;i++){
       else    
             assert(*htb.find(i) == i);
 }
+``` 
