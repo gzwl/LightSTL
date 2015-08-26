@@ -54,38 +54,38 @@ public:
 
 	/*************************迭代器相关**************************/
 public:
-	iterator begin()
-	{	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
+    iterator begin()
+    {	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
 	iterator end()
-	{	return finish;}
-	const_iterator begin() const
-	{	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
-	const_iterator end() const
-	{	return finish;}
-	const_iterator cbegin() const
-	{	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
-	const_iterator cend() const
-	{ return finish;}
-	reverse_iterator rbegin()
-	{  return finish - 1;}
-	reverse_iterator rend()
-	{	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
-	const_reverse_iterator rbegin() const
-	{  return finish - 1;}
-	const_reverse_iterator rend() const
-	{	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
-	const_reverse_iterator crbegin() const
-	{ return finish - 1;}
-	const_reverse_iterator crend() const
-	{	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
+    {	return finish;}
+    const_iterator begin() const
+    {	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
+    const_iterator end() const
+    {	return finish;}
+    const_iterator cbegin() const
+    {	return end_of_storage == data.str + LOCALSIZE ? data.str : data.start;}
+    const_iterator cend() const
+    { return finish;}
+    reverse_iterator rbegin()
+    {  return finish - 1;}
+    reverse_iterator rend()
+    {	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
+    const_reverse_iterator rbegin() const
+    {  return finish - 1;}
+    const_reverse_iterator rend() const
+    {	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
+    const_reverse_iterator crbegin() const
+    { return finish - 1;}
+    const_reverse_iterator crend() const
+    {	return end_of_storage == data.str + LOCALSIZE ? data.str - 1: data.start - 1;}
 
 	/*************************容量相关****************************/
 public:
-	bool empty() const {	return cbegin() == cend();}
-	size_t size() const {	return cend() - cbegin();}
-	size_t length() const {	    return cend() - cbegin();}
-	size_t max_size() const {  return end_of_storage - cbegin();}
-	size_t capacity() const {	return end_of_storage - cbegin();}
+    bool empty() const {	return cbegin() == cend();}
+    size_t size() const {	return cend() - cbegin();}
+    size_t length() const {	    return cend() - cbegin();}
+    size_t max_size() const {  return end_of_storage - cbegin();}
+    size_t capacity() const {	return end_of_storage - cbegin();}
 
 	/*************************访问元素****************************/
 public:
@@ -94,17 +94,17 @@ public:
     reference back() ;
     const_reference back() const;
 
-	reference operator[](size_t n);
-	const_reference operator[](size_t n) const;
-	string substr(size_t pos = 0) const;
-	string substr(size_t pos ,size_t len) const;
+    reference operator[](size_t n);
+    const_reference operator[](size_t n) const;
+    string substr(size_t pos = 0) const;
+    string substr(size_t pos ,size_t len) const;
 
-	size_t find(const char c,size_t pos = 0) const;
+    size_t find(const char c,size_t pos = 0) const;
     size_t find(const char *s,size_t pos = 0) const;
     size_t find(const char *s,size_t pos,size_t n) const;
     size_t find(const string& s,size_t pos = 0) const;
 
-	size_t rfind(const char c,size_t pos = npos) const;
+    size_t rfind(const char c,size_t pos = npos) const;
     size_t rfind(const char *s,size_t pos = npos) const;
     size_t rfind(const char *s,size_t pos,size_t n) const;
     size_t rfind(const string& s,size_t pos = npos) const;
@@ -143,13 +143,13 @@ public:
     string& insert(size_t pos,const char* s,size_t n);
     string& insert(size_t pos,const string& s);
     string& insert(size_t pos,const string& s,size_t pos2,size_t n);
-	string& insert(iterator pos,const char val);
-	string& insert(iterator pos,size_t n,const char val);
-	string& insert(iterator pos,const_iterator lhs,const_iterator rhs);
+    string& insert(iterator pos,const char val);
+    string& insert(iterator pos,size_t n,const char val);
+    string& insert(iterator pos,const_iterator lhs,const_iterator rhs);
 
-	string& operator+=(const char val);
-	string& operator+=(const char* str);
-	string& operator+=(const string& rhs);
+    string& operator+=(const char val);
+    string& operator+=(const char* str);
+    string& operator+=(const string& rhs);
 
     friend string operator+(const string& s,const char val);
     friend string operator+(const char val,const string& s);
@@ -164,15 +164,15 @@ public:
     string& append(size_t n,const char c);
     string& append(const_iterator first,const_iterator last);
 
-	void resize(size_t n,const char val = '\0');
+    void resize(size_t n,const char val = '\0');
 
 	/*************************删除元素****************************/
 public:
     void pop_back() {   --finish;}
     string& erase(size_t pos,size_t nsize);
-	iterator erase(iterator pos);
-	iterator erase(iterator start,iterator finish);
-	void clear();
+    iterator erase(iterator pos);
+    iterator erase(iterator start,iterator finish);
+    void clear();
 
 	/*************************替换元素****************************/
 public:
@@ -196,7 +196,7 @@ public:
     int compare(size_t pos,size_t n,const char *s) const;
     int compare(size_t pos,size_t n,const char *s,size_t pos2) const;
 
-	friend bool operator==(const string& lhs,const string& rhs);
+    friend bool operator==(const string& lhs,const string& rhs);
     friend bool operator!=(const string& lhs,const string& rhs);
     friend bool operator>(const string& lhs,const string& rhs);
     friend bool operator>=(const string& lhs,const string& rhs);
@@ -211,15 +211,15 @@ public:
 
     /*************************空间管理****************************/
 private:
-	char* allocate(size_t n){	return data_allocator::allocate(n);}
-	void deallocate(){  data_allocator::deallocate(data.start,capacity());}
-	void allocate_and_fill(size_t n,const char val)
-	{
+    char* allocate(size_t n){	return data_allocator::allocate(n);}
+    void deallocate(){  data_allocator::deallocate(data.start,capacity());}
+    void allocate_and_fill(size_t n,const char val)
+    {
         data.start = allocate(n);
         uninitialized_fill_n(data.start,n,val);
         finish = data.start + n;
         end_of_storage = data.start + n;
-	}
+    }
 
 
 };
