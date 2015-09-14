@@ -33,22 +33,16 @@ LightSTL是STL的一个子集和一个超集，是我在分析STL源码后结合
 
 ## LightSTL单元测试（语句覆盖）
 * 主要容器
-    * vector(100%)
-    * list(100%)
+    * vector(90%)
+    * list(90%)
     * queue(100%)
     * priority_queue(100%)
     * stack(100%)
     * pair(100%)
     * string(100%)
-    * hash_table(100%)
-    * hash_map(100%)
-* 算法库
-    * fill(100%)
-    * fill_n(100%)
-    * copy(100%)
-    * copy_backward(100%) 
-    * sort_heap(100%)
-    * sort(100%)
+    * hash_table(90%)
+    * hash_map(90%)
+    * algorithm(40%)
 
 
 ## LightSTL性能测试
